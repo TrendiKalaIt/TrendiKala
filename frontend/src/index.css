@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* color code
+footer  footer #bedaa4,rgba(190,218,164,255)
+bg-button 
+#93a87e,rgba(147,168,126,255) 
+*/
+
+@theme {
+  --color-footer: #bedaa4;
+  --color-button-bg: #93a87e;
+}
