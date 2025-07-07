@@ -14,6 +14,7 @@ import Img12 from '../assets/img12.webp'
 import Img13 from '../assets/img13.webp'
 import Img14 from '../assets/img14.webp'
 import Bgremove from '../assets/posterbgremove.png'
+import Logo from '../assets/trendikala_logo_bg.png'
 
 export {
     Img1,
@@ -30,7 +31,7 @@ export {
     Img12,
     Img13,
     Img14,
-
+    Logo,
     Bgremove
 };
 
@@ -319,7 +320,7 @@ export const productData = [
 
 
 
-// src/assets/wishlistData.js
+// sr/wishlistData.js
 export const wishlistData = [
   {
     id: 1,

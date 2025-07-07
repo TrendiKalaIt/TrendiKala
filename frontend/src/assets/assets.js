@@ -1,63 +1,50 @@
 //assets.js
 
-// appData.js
-import Img1 from '../assets/img1.webp'
-import Img2 from '../assets/img2.webp'
-import Img3 from '../assets/img3.webp'
-import Img4 from '../assets/img4.webp'
-import Img5 from '../assets/img5.webp'
-import Img6 from '../assets/img6.webp'
-import imageC2 from '../assets/imageC2.webp'
-import imageC1 from '../assets/imageC1.webp'
-import imageC3 from '../assets/imageC3.jpg'
-import imageC4 from '../assets/imageC4.jpg'
-import imageC5 from '../assets/imageC5.jpg'
-import imageC6 from '../assets/imageC6.jpg'
-import imageC7 from '../assets/imageC7.jpg'
-import imageC8 from '../assets/imageC8.jpg'
-import imageC9 from '../assets/imageC9.jpg'
-import imageC10 from '../assets/imageC10.jpg'
-import imageC11 from '../assets/imageC11.jpg'
-import imageC12 from '../assets/imageC12.jpg'
+// src/assets/assets.js
 
+import Img1 from './img1.webp'
+import Img2 from './img2.webp'
+import Img3 from './img3.webp'
+import Img4 from './img4.webp'
+import Img5 from './img5.webp'
+import Img6 from './img6.webp'
+import Img7 from './img7.webp'
+import Img8 from './img8.webp'
+import Img9 from './img9.webp'
+import Img10 from './img10.webp'
+import Img11 from './img11.webp'
+import Img12 from './img12.webp'
+import Img13 from './img13.webp'
+import Img14 from './img14.webp'
 
+import imageC1 from './imageC1.webp'
+import imageC2 from './imageC2.webp'
+import imageC3 from './imageC3.jpg'
+import imageC4 from './imageC4.jpg'
+import imageC5 from './imageC5.jpg'
+import imageC6 from './imageC6.jpg'
+import imageC7 from './imageC7.jpg'
+import imageC8 from './imageC8.jpg'
+import imageC9 from './imageC9.jpg'
+import imageC10 from './imageC10.jpg'
+import imageC11 from './imageC11.jpg'
+import imageC12 from './imageC12.jpg'
 
+import Bgremove from './posterbgremove.png'
+import Logo from './trendikala_logo_bg.png'
 
-
-
-
-import Img9 from '../assets/img9.webp'
-import Img10 from '../assets/img10.webp'
-import Img11 from '../assets/img11.webp'
-import Bgremove from '../assets/posterbgremove.png'
-
-
-
-
-
+// Export as one object
 export {
-  Img1,
-  Img2,
-  Img3,
-  Img4,
-  Img5,
-  Img6,
+  Img1, Img2, Img3, Img4, Img5, Img6, Img7, Img8,
+  Img9, Img10, Img11, Img12, Img13, Img14,
+  imageC1, imageC2, imageC3, imageC4, imageC5, imageC6,
+  imageC7, imageC8, imageC9, imageC10, imageC11, imageC12,
   Bgremove,
-  imageC3,
-  imageC4,
-  imageC5,
-  imageC6,
-  imageC7,
-  imageC8,
-  imageC9,
-  imageC10,
-  imageC11,
-  imageC12,
-
-  
+  Logo
+}
 
 
-};
+
 
 // export const productData = [
 //   {

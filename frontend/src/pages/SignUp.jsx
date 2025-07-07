@@ -1,7 +1,11 @@
+
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { showLoader, hideLoader } from '../utility/loaderSlice'; 
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -11,32 +15,36 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // 
 
   const handleSignUp = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
 
     try {
+      dispatch(showLoader()); 
+
       const response = await axios.post('http://localhost:5000/api/auth/register', {
         name: fullName,
         email,
-        password
+        password,
       });
 
-      alert(response.data.message); // show success message
-      navigate('/verify-otp'); // redirect to login page
+      toast.success(response.data.message);
+      localStorage.setItem('emailForOTP', email);
+      navigate('/verify-otp');
     } catch (error) {
       const msg = error.response?.data?.message || 'Registration failed';
       console.error('Signup Error:', msg);
-      alert(msg);
+      toast.error(msg);
+    } finally {
+      dispatch(hideLoader()); 
     }
   };
-
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-8 px-4 mb-2">
       {/* Header */}
@@ -161,7 +169,7 @@ const SignUp = () => {
         </div>
       </div>
     </div>
-  );
+  );// (👉 the rest of your form JSX stays the same)
 };
 
 export default SignUp;

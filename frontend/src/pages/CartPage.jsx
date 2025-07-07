@@ -1,47 +1,66 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart, updateQuantity } from '../utiliti/cartSlice';
+import {
+  fetchCart,
+  removeFromCart,
+  updateQuantity,
+} from '../utility/cartSlice';
 
 function CartPage() {
   const dispatch = useDispatch();
-  const products = useSelector(state => state.cart);
-  const [shippingOption, setShippingOption] = useState('free');
   const navigate = useNavigate();
 
+  // cart state from Redux
+  const { items: products, status, error } = useSelector(state => state.cart);
 
-  const changeQuantity = (id, diff) => {
-    const product = products.find(p => p.id === id);
-    if (product) {
-      const newQty = product.quantity + diff;
+  const [shippingOption, setShippingOption] = useState('free');
 
-      if (newQty < 1) {
-        toast.error('Quantity cannot be less than 1');
-        return;
-      }
+  // Load cart on component mount
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchCart());
+    }
+  }, [dispatch, status]);
 
-      dispatch(updateQuantity({ id, quantity: newQty }));
+  const changeQuantity = async (id, diff) => {
+    const product = products.find(p => p._id === id || p.id === id);
+    if (!product) return;
 
-      if (diff > 0) {
-        toast.success(`Increased quantity of "${product.productName}"`);
-      } else {
-        toast.success(`Decreased quantity of "${product.productName}"`);
-      }
+    const newQty = product.quantity + diff;
+    if (newQty < 1) {
+      toast.error('Quantity cannot be less than 1');
+      return;
+    }
+
+    try {
+      await dispatch(updateQuantity({ id, quantity: newQty })).unwrap();
+      toast.success(
+        `${diff > 0 ? 'Increased' : 'Decreased'} quantity of "${product.productName || product.name}"`
+      );
+    } catch (err) {
+      toast.error(`Failed to update quantity: ${err}`);
     }
   };
 
-  const handleRemove = (id) => {
-    const product = products.find(p => p.id === id);
-    dispatch(removeFromCart(id));
-    toast.success(`Removed "${product.productName}" from cart`);
+  const handleRemove = async (id) => {
+    const product = products.find(p => p._id === id || p.id === id);
+    if (!product) return;
+
+    try {
+      await dispatch(removeFromCart(id)).unwrap();
+      toast.success(`Removed "${product.productName || product.name}" from cart`);
+    } catch (err) {
+      toast.error(`Failed to remove item: ${err}`);
+    }
   };
 
   const subtotal = products.reduce((sum, p) => sum + p.discountPrice * p.quantity, 0);
   const shippingCost =
     shippingOption === 'free' ? 0 :
-      shippingOption === 'express' ? 15 :
-        shippingOption === 'pickup' ? subtotal * 0.21 : 0;
+    shippingOption === 'express' ? 15 :
+    shippingOption === 'pickup' ? subtotal * 0.21 : 0;
   const total = subtotal + shippingCost;
 
   const ShippingRadio = ({ value, label, discountPrice }) => (
@@ -67,6 +86,14 @@ function CartPage() {
     </label>
   );
 
+  if (status === 'loading') {
+    return <p className="text-center mt-8 text-gray-500">Loading cart...</p>;
+  }
+
+  if (status === 'failed') {
+    return <p className="text-center mt-8 text-red-500">Error: {error}</p>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <h1 className="text-4xl font-semibold text-green-700 text-center mb-12">Cart</h1>
@@ -74,11 +101,17 @@ function CartPage() {
       <div className="flex justify-center items-center mb-12 space-x-8">
         {['Shopping cart', 'Checkout details', 'Order complete'].map((step, i) => (
           <div key={step} className="flex flex-col items-center">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold
-              ${i === 0 ? 'bg-green-700 text-white' : 'border-2 border-gray-400 text-gray-400'}`}>
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center font-bold
+              ${i === 0 ? 'bg-green-700 text-white' : 'border-2 border-gray-400 text-gray-400'}`}
+            >
               {i + 1}
             </div>
-            <span className={`mt-2 ${i === 0 ? 'text-green-700 font-medium border-b-2 border-green-700 pb-1' : 'text-gray-400'}`}>
+            <span
+              className={`mt-2 ${
+                i === 0 ? 'text-green-700 font-medium border-b-2 border-green-700 pb-1' : 'text-gray-400'
+              }`}
+            >
               {step}
             </span>
           </div>
@@ -101,21 +134,21 @@ function CartPage() {
 
               {products.map(product => (
                 <div
-                  key={product.id}
+                  key={product._id || product.id}
                   className="grid grid-cols-1 md:grid-cols-4 gap-4 py-6 border-b border-gray-100"
                 >
                   {/* Product Info */}
                   <div className="md:col-span-2 flex items-start sm:items-center gap-4">
                     <img
                       src={product.image || `https://placehold.co/100x100`}
-                      alt={product.name}
+                      alt={product.productName || product.name}
                       className="w-24 h-24 object-cover rounded-lg shrink-0"
                     />
                     <div>
                       <h3 className="font-semibold text-gray-800">{product.productName || product.name}</h3>
                       <p className="text-sm text-gray-500">Color: {product.color || 'N/A'}</p>
                       <button
-                        onClick={() => handleRemove(product.id)}
+                        onClick={() => handleRemove(product._id || product.id)}
                         className="text-red-500 text-sm mt-2 hover:underline"
                       >
                         Remove
@@ -126,14 +159,14 @@ function CartPage() {
                   {/* Quantity */}
                   <div className="flex items-center sm:justify-start">
                     <button
-                      onClick={() => changeQuantity(product.id, -1)}
+                      onClick={() => changeQuantity(product._id || product.id, -1)}
                       className="px-3 py-1 text-gray-600 hover:bg-gray-100 border rounded-l-md"
                     >
                       -
                     </button>
                     <span className="px-3 py-1 border-y">{product.quantity}</span>
                     <button
-                      onClick={() => changeQuantity(product.id, 1)}
+                      onClick={() => changeQuantity(product._id || product.id, 1)}
                       className="px-3 py-1 text-gray-600 hover:bg-gray-100 border rounded-r-md"
                     >
                       +
@@ -142,9 +175,7 @@ function CartPage() {
 
                   {/* Pricing */}
                   <div className="flex flex-col justify-center gap-1">
-                    <div className="text-gray-700 text-sm md:text-base">
-                      ₹{product.discountPrice}
-                    </div>
+                    <div className="text-gray-700 text-sm md:text-base">₹{product.discountPrice}</div>
                     <div className="font-semibold text-gray-800 text-sm md:text-base">
                       ₹{(product.quantity * product.discountPrice).toFixed(2)}
                     </div>
@@ -154,7 +185,6 @@ function CartPage() {
             </>
           )}
         </div>
-
 
         {/* Cart Summary */}
         <div className="w-full lg:w-96 bg-white p-6 rounded-lg shadow-sm">
@@ -177,13 +207,12 @@ function CartPage() {
           <button
             onClick={() => {
               toast.success('Proceeding to checkout...');
-              setTimeout(() => navigate('/checkout'), 1000); // Adjust delay as needed
+              setTimeout(() => navigate('/checkout'), 1000);
             }}
             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg mt-6 transition-colors duration-200"
           >
             Checkout
           </button>
-
         </div>
       </div>
     </div>

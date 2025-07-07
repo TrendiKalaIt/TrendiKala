@@ -10,7 +10,7 @@ const generateOTP = () => {
 
 // REGISTER USER with OTP
 exports.registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email,mobile, password } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
@@ -23,6 +23,7 @@ exports.registerUser = async (req, res) => {
     const newUser = new User({
       name,
       email,
+      mobile,
       password: hashedPassword,
       otp,
       otpExpires,

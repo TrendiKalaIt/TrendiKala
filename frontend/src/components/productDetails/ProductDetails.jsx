@@ -64,8 +64,8 @@ const ProductDetails = ({ productData }) => {
   );
 
   return (
-    <div className="font-sans antialiased text-gray-700 p-4 sm:p-6 lg:p-8 flex flex-col items-center min-h-screen">
-      <div className="w-full mx-auto bg-red rounded-xl p-5 sm:p-8 space-y-6 border border-[#35894E]">
+    <div className="font-sans antialiased text-gray-700 flex flex-col items-center min-h-screen">
+      <div className="w-full mx-auto bg-red rounded-xl p-5 sm:p-8 border border-[#35894E]">
         {/* Product Name and Description */}
         <div className="space-y-4">
           <h3 className="text-2xl font-bold text-[#35894E] mb-2">{productName}</h3>

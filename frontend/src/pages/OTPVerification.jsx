@@ -1,37 +1,38 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { showLoader, hideLoader } from '../utility/loaderSlice'; // adjust the path if needed
 
 const OTPVerification = () => {
   const [otp, setOtp] = useState('');
-  const [email, setEmail] = useState(''); // Optional: If you want to display/verify user's email
-  const [isLoading, setIsLoading] = useState(false);
+  const [email] = useState(() => localStorage.getItem('emailForOTP') || '');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  // Optional: You can get email from route state or localStorage
-  // For example, if you redirect from signup/login with email
-  // useEffect(() => { setEmail(location.state?.email || ''); }, []);
+  const dispatch = useDispatch();
 
   const handleOTPSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
+    dispatch(showLoader());
 
     try {
       const response = await axios.post('http://localhost:5000/api/auth/verify-otp', {
-        email, // or get from localStorage/state as needed
+        email,
         otp,
       });
 
-      // Handle success (e.g., redirect to dashboard or login)
-      localStorage.setItem('token', response.data.token); 
-      navigate('/'); 
+      toast.success('Email verified successfully!');
+      localStorage.setItem('token', response.data.token);
+      navigate('/signin');
     } catch (error) {
-      setError(error.response?.data?.message || 'OTP verification failed');
+      const message = error.response?.data?.message || 'OTP verification failed';
+      setError(message);
+      toast.error(message);
       console.error('OTP verification failed:', error);
     } finally {
-      setIsLoading(false);
+      dispatch(hideLoader());
     }
   };
 
@@ -50,8 +51,12 @@ const OTPVerification = () => {
             </div>
             <div className="hidden md:block border-l-2 border-green-700 h-20 px-2" />
             <div className="hidden md:block">
-              <span className="block text-green-700 tracking-[1.2rem] text-xl sm:text-2xl">TRENDI <br /> KALA</span>
-              <span className="block text-sm text-gray-500 mt-1">TRENDS & KALA BY EVERY DESIGN</span>
+              <span className="block text-green-700 tracking-[1.2rem] text-xl sm:text-2xl">
+                TRENDI <br /> KALA
+              </span>
+              <span className="block text-sm text-gray-500 mt-1">
+                TRENDS & KALA BY EVERY DESIGN
+              </span>
             </div>
           </div>
         </div>
@@ -75,12 +80,9 @@ const OTPVerification = () => {
         </h2>
 
         <form onSubmit={handleOTPSubmit}>
-          {/* Optional: Display user's email */}
           {email && (
             <div className="mb-4">
-              <label className="block text-[#35894E] text-sm font-medium mb-2">
-                Email
-              </label>
+              <label className="block text-[#35894E] text-sm font-medium mb-2">Email</label>
               <div className="w-full border-2 border-[#35894e75] rounded py-2 px-3 text-gray-700 bg-gray-100">
                 {email}
               </div>
@@ -101,9 +103,6 @@ const OTPVerification = () => {
               onChange={(e) => setOtp(e.target.value)}
               required
             />
-            <a href="#" className="text-sm text-green-600 hover:text-[#93A87E] mt-2 inline-block">
-              Resend OTP
-            </a>
           </div>
 
           {/* Error Message */}
@@ -117,10 +116,9 @@ const OTPVerification = () => {
           <div>
             <button
               type="submit"
-              disabled={isLoading}
               className="w-full bg-[#93A87E] hover:bg-[#93a87eae] text-white font-bold py-2 px-6 rounded-full transition"
             >
-              {isLoading ? 'Verifying...' : 'VERIFY OTP'}
+              VERIFY OTP
             </button>
           </div>
         </form>
