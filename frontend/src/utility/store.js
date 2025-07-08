@@ -7,6 +7,7 @@ import cartReducer from './cartSlice.js';
 import checkoutReducer from './checkoutSlice.js';
 import authReducer from '../utility/auth/authSlice.js';
 import reviewReducer from '../utility/reviewSlice.js'
+import orderReducer from '../utility/orderSlice.js'
 
 
 const store = configureStore({
@@ -18,6 +19,7 @@ const store = configureStore({
     cart: cartReducer,
     checkout: checkoutReducer,
     product: productReducer,
+    order: orderReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

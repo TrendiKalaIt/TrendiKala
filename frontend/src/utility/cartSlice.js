@@ -36,6 +36,7 @@ export const addToCart = createAsyncThunk(
   }
 );
 
+
 // Update quantity of one cart item
 export const updateQuantity = createAsyncThunk(
   'cart/updateQuantity',

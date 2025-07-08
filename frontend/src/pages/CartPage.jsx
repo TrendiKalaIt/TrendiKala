@@ -7,17 +7,25 @@ import {
   removeFromCart,
   updateQuantity,
 } from '../utility/cartSlice';
+import {
+  setOrderDetails,
+  clearOrderDetails,
+  setCartFromCheckout,
+}
+ from '../utility/checkoutSlice';
+
 
 function CartPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // cart state from Redux
   const { items: products, status, error } = useSelector(state => state.cart);
 
+  // This state `shippingOption` is kept here for consistency with your original code,
+  // but its value won't directly affect the 12% delivery charge calculation in the summary.
+  // It might be used elsewhere if you have other shipping options not shown in the summary.
   const [shippingOption, setShippingOption] = useState('free');
 
-  // Load cart on component mount
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchCart());
@@ -57,34 +65,46 @@ function CartPage() {
   };
 
   const subtotal = products.reduce((sum, p) => sum + p.discountPrice * p.quantity, 0);
-  const shippingCost =
-    shippingOption === 'free' ? 0 :
-    shippingOption === 'express' ? 15 :
-    shippingOption === 'pickup' ? subtotal * 0.21 : 0;
-  const total = subtotal + shippingCost;
 
-  const ShippingRadio = ({ value, label, discountPrice }) => (
+  // --- START OF MODIFIED LOGIC FOR 12% DELIVERY CHARGE ---
+  const DELIVERY_CHARGE_PERCENTAGE = 0.12; // Define 12% as a constant
+  const deliveryCharge = subtotal * DELIVERY_CHARGE_PERCENTAGE; // Calculate 12% of subtotal
+
+  // The 'shippingCost' used in the total calculation now directly uses the 'deliveryCharge'
+  const shippingCost = deliveryCharge;
+  // --- END OF MODIFIED LOGIC FOR 12% DELIVERY CHARGE ---
+
+  const total = subtotal + shippingCost; // Total includes the 12% delivery charge
+
+  // --- START OF MODIFIED ShippingRadio COMPONENT ---
+  // This component is now adapted to display the fixed 12% delivery charge.
+  // The radio button's functionality for selection is effectively disabled
+  // as there's only one fixed delivery charge option.
+  const ShippingRadio = ({ value, label, displayPrice }) => (
     <label
-      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-all duration-200 
-        ${shippingOption === value ? 'border-green-600 bg-green-100' : 'border-gray-200'}`}
+      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-all duration-200
+        ${value === 'deliveryCharge' ? 'border-green-600 bg-green-100' : 'border-gray-200'}`} // This will always highlight for 'deliveryCharge'
     >
       <div className="flex items-center">
         <input
           type="radio"
           name="shipping"
           value={value}
-          checked={shippingOption === value}
+          checked={value === 'deliveryCharge'} // Always checked for the single option
           onChange={() => {
-            setShippingOption(value);
-            toast.success(`Shipping changed to "${label}"`);
+            // No action needed here as shipping is fixed at 12%
+            // setShippingOption(value); // This line is commented out as it's not relevant for fixed charge
+            // toast.success(`Shipping changed to "${label}"`); // This toast is also not relevant
           }}
           className="form-radio accent-green-600 h-5 w-5"
         />
         <span className="ml-3 text-gray-700">{label}</span>
       </div>
-      <span className="font-medium text-gray-700">{discountPrice}</span>
+      <span className="font-medium text-gray-700">{displayPrice}</span>
     </label>
   );
+  // --- END OF MODIFIED ShippingRadio COMPONENT ---
+
 
   if (status === 'loading') {
     return <p className="text-center mt-8 text-gray-500">Loading cart...</p>;
@@ -108,9 +128,8 @@ function CartPage() {
               {i + 1}
             </div>
             <span
-              className={`mt-2 ${
-                i === 0 ? 'text-green-700 font-medium border-b-2 border-green-700 pb-1' : 'text-gray-400'
-              }`}
+              className={`mt-2 ${i === 0 ? 'text-green-700 font-medium border-b-2 border-green-700 pb-1' : 'text-gray-400'
+                }`}
             >
               {step}
             </span>
@@ -124,7 +143,6 @@ function CartPage() {
             <p className="text-gray-500 text-center">Your cart is empty.</p>
           ) : (
             <>
-              {/* Header row - hidden on small screens */}
               <div className="hidden md:grid grid-cols-4 gap-4 pb-4 border-b border-gray-200 font-medium text-gray-500">
                 <div className="col-span-2">Product</div>
                 <div>Quantity</div>
@@ -137,7 +155,6 @@ function CartPage() {
                   key={product._id || product.id}
                   className="grid grid-cols-1 md:grid-cols-4 gap-4 py-6 border-b border-gray-100"
                 >
-                  {/* Product Info */}
                   <div className="md:col-span-2 flex items-start sm:items-center gap-4">
                     <img
                       src={product.image || `https://placehold.co/100x100`}
@@ -147,6 +164,7 @@ function CartPage() {
                     <div>
                       <h3 className="font-semibold text-gray-800">{product.productName || product.name}</h3>
                       <p className="text-sm text-gray-500">Color: {product.color || 'N/A'}</p>
+                      <p className="text-sm text-gray-500">Size: {product.size || 'N/A'}</p>
                       <button
                         onClick={() => handleRemove(product._id || product.id)}
                         className="text-red-500 text-sm mt-2 hover:underline"
@@ -156,7 +174,6 @@ function CartPage() {
                     </div>
                   </div>
 
-                  {/* Quantity */}
                   <div className="flex items-center sm:justify-start">
                     <button
                       onClick={() => changeQuantity(product._id || product.id, -1)}
@@ -173,7 +190,6 @@ function CartPage() {
                     </button>
                   </div>
 
-                  {/* Pricing */}
                   <div className="flex flex-col justify-center gap-1">
                     <div className="text-gray-700 text-sm md:text-base">₹{product.discountPrice}</div>
                     <div className="font-semibold text-gray-800 text-sm md:text-base">
@@ -186,18 +202,28 @@ function CartPage() {
           )}
         </div>
 
-        {/* Cart Summary */}
+        {/* --- START OF MODIFIED CART SUMMARY SECTION --- */}
         <div className="w-full lg:w-96 bg-white p-6 rounded-lg shadow-sm">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Cart summary</h2>
           <div className="space-y-4">
-            <ShippingRadio value="free" label="Free shipping" discountPrice="₹0.00" />
-            <ShippingRadio value="express" label="Express shipping" discountPrice="+₹15.00" />
-            <ShippingRadio value="pickup" label="Pick Up" discountPrice="+21%" />
+            {/* Displaying the fixed 12% Delivery Charge */}
+            <ShippingRadio
+              value="deliveryCharge" // A new value to uniquely identify this fixed option
+              label="Delivery Charge (12%)"
+              displayPrice={`₹${deliveryCharge.toFixed(2)}`} // Display the calculated 12% charge
+            />
+            {/* If you had other shipping options to display (but not select), you'd put them here.
+                For now, only the 12% charge is shown */}
           </div>
           <div className="border-t border-gray-200 mt-6 pt-4 space-y-3">
             <div className="flex justify-between text-gray-700">
               <span>Subtotal</span>
               <span className="font-medium">₹{subtotal.toFixed(2)}</span>
+            </div>
+            {/* Explicitly showing the Delivery Charge line */}
+            <div className="flex justify-between text-gray-700">
+              <span>Delivery Charge</span>
+              <span className="font-medium">₹{deliveryCharge.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-xl font-semibold text-gray-800">
               <span>Total</span>
@@ -206,6 +232,11 @@ function CartPage() {
           </div>
           <button
             onClick={() => {
+              dispatch(clearOrderDetails()); // Clears any 'Buy Now' product details
+              // When navigating to checkout, we dispatch the 'products' from the cart.
+              // The 'CheckoutDetails' page will then need to independently calculate
+              // the 12% shipping cost based on these received products to maintain consistency.
+              dispatch(setCartFromCheckout(products));
               toast.success('Proceeding to checkout...');
               setTimeout(() => navigate('/checkout'), 1000);
             }}
@@ -214,6 +245,7 @@ function CartPage() {
             Checkout
           </button>
         </div>
+        {/* --- END OF MODIFIED CART SUMMARY SECTION --- */}
       </div>
     </div>
   );

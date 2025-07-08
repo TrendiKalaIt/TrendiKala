@@ -5,10 +5,12 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import { showLoader, hideLoader } from '../utility/loaderSlice'; 
+import { showLoader, hideLoader } from '../utility/loaderSlice';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
+
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,11 +28,12 @@ const SignUp = () => {
     }
 
     try {
-      dispatch(showLoader()); 
+      dispatch(showLoader());
 
       const response = await axios.post('http://localhost:5000/api/auth/register', {
         name: fullName,
         email,
+        mobile,
         password,
       });
 
@@ -42,7 +45,7 @@ const SignUp = () => {
       console.error('Signup Error:', msg);
       toast.error(msg);
     } finally {
-      dispatch(hideLoader()); 
+      dispatch(hideLoader());
     }
   };
   return (
@@ -102,6 +105,20 @@ const SignUp = () => {
               required
             />
           </div>
+          <div className="mb-4">
+            <label htmlFor="mobile" className="block text-[#35894E] text-sm font-medium mb-2">Mobile Number</label>
+            <input
+              type="tel"
+              id="mobile"
+              className="border-2 border-[#35894e75] rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:border-[#35894E]"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              required
+              pattern="[0-9]{10}"
+              title="Enter a valid 10-digit mobile number"
+            />
+          </div>
+
 
           <div className="mb-4">
             <label htmlFor="password" className="block text-[#35894E] text-sm font-medium mb-2">Password</label>
@@ -169,7 +186,7 @@ const SignUp = () => {
         </div>
       </div>
     </div>
-  );// (👉 the rest of your form JSX stays the same)
+  );
 };
 
 export default SignUp;

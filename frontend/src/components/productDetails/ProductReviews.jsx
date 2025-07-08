@@ -8,7 +8,7 @@ const getAvgRating = (reviews) => {
 };
 
 const StarIcon = ({ filled }) => (
-  <Star className={`w-5 h-5 ${filled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+  <Star className={`w-5 h-5 ${filled ? 'text-yellow-400 fill-yellow-400' : 'text-gray-400'}`} />
 );
 
 const CheckCircleIcon = () => (
@@ -83,7 +83,7 @@ const ProductReviews = ({ reviews = [], error = null }) => {
                   <Star
                     key={`avg-star-${i}`}
                     size={20}
-                    fill={i < Math.round(avgRating) ? '#FFC107' : '#E0E0E0'}
+                    fill={i < Math.round(avgRating) ? '#FFC107' : '#ffffff'}
                     stroke={i < Math.round(avgRating) ? '#FFC107' : '#A0A0A0'}
                   />
                 ))}

@@ -1,0 +1,215 @@
+const Order = require('../models/Order');
+const Cart = require('../models/Cart');
+const sendEmail = require('../utils/sendEmail');
+const dotenv = require('dotenv');
+dotenv.config();
+
+exports.placeOrder = async (req, res) => {
+    console.log('Backend received req.body:', req.body);
+    try {
+        const userId = req.user._id; // Assuming req.user is populated by authentication middleware
+        // --- MODIFIED: Extract shippingCost and totalAmount from req.body ---
+        const { shippingInfo, paymentMethod, items, shippingCost, totalAmount } = req.body;
+        // --- END MODIFIED ---
+
+        let orderItems;
+
+        // This logic correctly determines if it's a Buy Now flow or Cart checkout flow
+        if (items && Array.isArray(items) && items.length > 0) {
+            // Buy Now flow - use items from request body
+            orderItems = items;
+        } else {
+            // Cart checkout flow - fetch cart from DB
+            const cart = await Cart.findOne({ user: userId });
+            if (!cart || cart.items.length === 0) {
+                return res.status(400).json({ message: 'Cart is empty' });
+            }
+            orderItems = cart.items;
+        }
+
+        // --- REMOVED: Backend recalculation of totalAmount ---
+        // const totalAmount = orderItems.reduce((sum, item) => {
+        //     return sum + item.discountPrice * item.quantity;
+        // }, 0);
+        // --- END REMOVED ---
+
+        // Create a new order instance
+        const newOrder = new Order({
+            user: userId,
+            items: orderItems,
+            shippingInfo,
+            paymentMethod,
+            // --- MODIFIED: Use shippingCost and totalAmount from frontend payload ---
+            shippingCost: shippingCost, // Use the shippingCost sent from frontend
+            totalAmount: totalAmount,  // Use the totalAmount sent from frontend
+            // If you still need shippingOption, you might pass it from frontend too,
+            // or derive it here (e.g., 'fixed_12_percent_delivery').
+            shippingOption: 'fixed_12_percent_delivery', // Example: set a descriptive value
+            // --- END MODIFIED ---
+        });
+
+        // Save the order to the database
+        await newOrder.save();
+
+        // Clear cart only if order was created from cart, not from Buy Now
+        if (!items || items.length === 0) { // This condition means it was a cart checkout
+            await Cart.findOneAndDelete({ user: userId });
+        }
+
+        // --- COMMON Order Summary Table HTML (used by both emails) ---
+        const orderItemsTableHtml = orderItems.map(item => `
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top;">
+                    <strong>${item.productName}</strong><br />
+                    <span style="font-size: 12px; color: #555;">
+                        ${item.color ? `Color: ${item.color}` : ''}
+                        ${item.color && item.size ? ', ' : ''}
+                        ${item.size ? `Size: ${item.size}` : ''}
+                    </span>
+                </td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center; vertical-align: top;">${item.quantity}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; vertical-align: top;">₹${item.discountPrice.toFixed(2)}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; vertical-align: top;">₹${(item.quantity * item.discountPrice).toFixed(2)}</td>
+            </tr>
+        `).join('');
+
+        const orderSummaryTableStructure = `
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: left;">Item</th>
+                        <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">Qty</th>
+                        <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">Price</th>
+                        <th style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${orderItemsTableHtml}
+                    <tr style="background-color: #eaf7ed;">
+                        <td colspan="3" style="padding: 10px; text-align: right; font-weight: bold;">Subtotal:</td>
+                        <td style="padding: 10px; text-align: right; font-weight: bold;">₹${(totalAmount - shippingCost).toFixed(2)}</td>
+                    </tr>
+                    <tr style="background-color: #eaf7ed;">
+                        <td colspan="3" style="padding: 10px; text-align: right; font-weight: bold;">Delivery Charge:</td>
+                        <td style="padding: 10px; text-align: right; font-weight: bold;">₹${shippingCost.toFixed(2)}</td>
+                    </tr>
+                    <tr style="background-color: #eaf7ed;">
+                        <td colspan="3" style="padding: 10px; text-align: right; font-weight: bold;">Total Amount:</td>
+                        <td style="padding: 10px; text-align: right; font-weight: bold; color: #4CAF50;">₹${totalAmount.toFixed(2)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        const shippingDetailsHtml = `
+            <div style="background-color: #f9f9f9; border-radius: 5px; padding: 15px;">
+                <p style="margin: 0;"><strong>${shippingInfo.fullName}</strong></p>
+                <p style="margin: 5px 0;">${shippingInfo.streetAddress}${shippingInfo.apartment ? ', ' + shippingInfo.apartment : ''}</p>
+                <p style="margin: 5px 0;">${shippingInfo.townCity}, ${shippingInfo.state || ''}, ${shippingInfo.zipCode || ''}</p>
+                <p style="margin: 5px 0;">Phone: ${shippingInfo.phoneNumber}</p>
+                <p style="margin: 5px 0 0;">Email: ${shippingInfo.emailAddress}</p>
+            </div>
+        `;
+
+        // --- Customer Email HTML ---
+        const customerEmailHtml = `
+            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
+                <div style="background-color: #4CAF50; color: #ffffff; padding: 20px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 28px;">TrendiKala</h1>
+                    <p style="margin: 5px 0 0; font-size: 18px;">Order Confirmation</p>
+                </div>
+
+                <div style="padding: 20px;">
+                    <h2 style="color: #2E7D32; font-size: 22px; margin-top: 0;">Hi ${shippingInfo.fullName}, thank you for your order!</h2>
+                    <p style="margin-bottom: 20px;">Your order <strong style="color: #007bff;">#${newOrder._id}</strong> has been successfully placed with TrendiKala. We're excited for you to receive your items!</p>
+
+                    <div style="background-color: #f9f9f9; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
+                        <p style="font-size: 16px; margin-bottom: 5px;"><strong>Order ID:</strong> <span style="color: #007bff;">${newOrder._id}</span></p>
+                        <p style="font-size: 16px; margin-bottom: 0;"><strong>Order Date:</strong> ${new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        <p style="font-size: 16px; margin-top: 5px;"><strong>Payment Method:</strong> ${paymentMethod}</p>
+                    </div>
+
+                    <h3 style="font-size: 18px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">🧾 Order Summary</h3>
+                    ${orderSummaryTableStructure}
+
+                    <h3 style="font-size: 18px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">📦 Shipping Details</h3>
+                    ${shippingDetailsHtml}
+
+                    <p style="margin-top: 30px; text-align: center; font-size: 14px; color: #666;">
+                        We’ll send you another email with tracking information once your order has shipped.<br/>
+                        For any questions, please contact our support team.
+                    </p>
+                    
+                </div>
+
+                <div style="background-color: #f2f2f2; padding: 15px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #e0e0e0;">
+                    <p style="margin: 0;">&copy; ${new Date().getFullYear()} TrendiKala. All rights reserved.</p>
+                    <p style="margin: 5px 0 0;">
+                        <a href="[Your Website Link]" style="color: #007bff; text-decoration: none;">Visit Our Store</a> |
+                        <a href="[Your Privacy Policy Link]" style="color: #007bff; text-decoration: none;">Privacy Policy</a>
+                    </p>
+                </div>
+            </div>
+        `;
+
+        // --- Admin Email HTML ---
+        const adminEmailHtml = `
+            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; background-color: #ffffff;">
+                <div style="background-color: #DC3545; color: #ffffff; padding: 20px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 28px;">TrendiKala Admin</h1>
+                    <p style="margin: 5px 0 0; font-size: 18px;">New Order Notification</p>
+                </div>
+
+                <div style="padding: 20px;">
+                    <h2 style="color: #DC3545; font-size: 22px; margin-top: 0;">New Order Received!</h2>
+                    <p style="margin-bottom: 20px;">An new order has been placed by <strong style="color: #007bff;">${shippingInfo.fullName}</strong>.</p>
+
+                    <div style="background-color: #f9f9f9; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
+                        <p style="font-size: 16px; margin-bottom: 5px;"><strong>Order ID:</strong> <span style="color: #007bff;">${newOrder._id}</span></p>
+                        <p style="font-size: 16px; margin-bottom: 0;"><strong>Order Date:</strong> ${new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                        <p style="font-size: 16px; margin-top: 5px;"><strong>Payment Method:</strong> ${paymentMethod}</p>
+                    </div>
+
+                    <h3 style="font-size: 18px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">🧾 Order Details</h3>
+                    ${orderSummaryTableStructure}
+
+                    <h3 style="font-size: 18px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">📦 Customer & Shipping Information</h3>
+                    ${shippingDetailsHtml}
+
+                    <p style="margin-top: 30px; text-align: center; font-size: 14px; color: #666;">
+                        Please process this order promptly.
+                    </p>
+                   
+                </div>
+
+                <div style="background-color: #f2f2f2; padding: 15px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #e0e0e0;">
+                    <p style="margin: 0;">&copy; ${new Date().getFullYear()} TrendiKala Admin. All rights reserved.</p>
+                </div>
+            </div>
+        `;
+
+        // Send email to customer
+        await sendEmail(
+            shippingInfo.emailAddress,
+            `Your TrendiKala Order #${newOrder._id} Confirmed!`,
+            customerEmailHtml
+        );
+
+        // Send email to admin (fallback if not defined)
+        if (process.env.ADMIN_EMAIL) {
+            await sendEmail(
+                process.env.ADMIN_EMAIL,
+                `NEW ORDER: #${newOrder._id} from ${shippingInfo.fullName}`, // More distinct subject
+                adminEmailHtml
+            );
+        }
+
+        res.status(201).json({
+            message: 'Order placed successfully and emails sent',
+            order: newOrder
+        });
+    } catch (err) {
+        console.error('Order placement error:', err);
+        res.status(500).json({ message: 'Failed to place order', error: err.message });
+    }
+};

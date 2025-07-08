@@ -167,11 +167,11 @@ const ProductDetailPage = () => {
               <Star
                 key={i}
                 size={20}
-                fill={i < Math.round(avgRating) ? '#FFC107' : '#E0E0E0'}
+                fill={i < Math.round(avgRating) ? '#FFC107' : '#ffffff'}
                 stroke={i < Math.round(avgRating) ? '#FFC107' : '#A0A0A0'}
               />
             ))}
-            <span className="text-gray-600">{avgRating}/5</span>
+            <span className="text-gray-600 font-semibold">{avgRating}/5</span>
           </div>
 
           {/* Price */}

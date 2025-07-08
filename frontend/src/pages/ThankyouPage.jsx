@@ -1,7 +1,25 @@
-import React from 'react';
-import { CheckCircle } from 'lucide-react'; // Import the CheckCircle icon
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { clearOrderDetails, clearCartFromCheckout, resetCheckoutState } from '../utility/checkoutSlice'; // Import new actions
+import { clearBuyNowProduct, clearOrder } from '../utility/orderSlice'; // Assuming clearBuyNowProduct is handled here
+import { clearCart } from '../utility/cartSlice'; // Make sure this is imported if it refers to the primary cart slice
+import { CheckCircle } from 'lucide-react'; // Ensure CheckCircle is imported
 
 const Thankyou = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // These clear actions ensure that when the user returns from /thankyou
+    // to any other page, the cart and checkout details are reset.
+    dispatch(clearOrderDetails());      // Clears orderDetails (buy now item)
+    dispatch(clearCartFromCheckout()); // Clears the temporary cart array used in checkout
+    dispatch(clearBuyNowProduct());    // Clears the buy now product from orderSlice if you use it for that purpose
+    dispatch(clearOrder());            // Clears any stored 'currentOrder' from orderSlice
+    dispatch(clearCart());             // Ensures the primary cart in cartSlice is cleared
+                                       // This is crucial if the user's cart in the DB was cleared,
+                                       // but the frontend Redux state wasn't updated by a cart-specific fetch.
+  }, [dispatch]);
+
   return (
     <div className="min-h-screen  flex items-center justify-center  ">
       <div className="w-full  bg-white shadow-lg  p-6 ">

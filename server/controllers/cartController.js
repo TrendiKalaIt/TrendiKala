@@ -23,45 +23,54 @@ exports.addToCart = async (req, res) => {
       return res.status(400).json({ message: "Invalid request format: items must be an array" });
     }
 
-    // Find or create cart
+    // Find or create user's cart
     let cart = await Cart.findOne({ user }) || new Cart({ user, items: [] });
 
     for (const incomingItem of items) {
-      // Verify product exists
-      const product = await Product.findById(incomingItem.product);
+      const { product: productId, quantity, color, size } = incomingItem;
+
+      // Check that product exists
+      const product = await Product.findById(productId);
       if (!product) {
-        return res.status(404).json({ message: `Product not found: ${incomingItem.product}` });
+        return res.status(404).json({ message: `Product not found: ${productId}` });
       }
 
-      // Find existing item by _id or by product and color
+      // Try to find existing item by _id first
       let existingItem = incomingItem._id ? cart.items.id(incomingItem._id) : null;
+
+      // Fallback to find by product + color + size
       if (!existingItem) {
         existingItem = cart.items.find(i =>
-          i.product.equals(product._id) && i.color === incomingItem.color
+          i.product.equals(product._id) &&
+          i.color === color &&
+          i.size === size
         );
       }
 
       if (existingItem) {
-        // Update existing item quantity and details
-        existingItem.quantity = incomingItem.quantity;
+        // Update existing item
+        existingItem.quantity = quantity;
         existingItem.discountPrice = product.discountPrice;
         existingItem.productName = product.productName;
         existingItem.image = product.thumbnail || '';
-        existingItem.color = incomingItem.color;
+        existingItem.color = color;
+        existingItem.size = size;
       } else {
-        // Add new item with generated _id
+        // Add new item to cart
         cart.items.push({
           _id: new mongoose.Types.ObjectId(),
           product: product._id,
-          quantity: incomingItem.quantity,
+          quantity,
           discountPrice: product.discountPrice,
           productName: product.productName,
           image: product.thumbnail || '',
-          color: incomingItem.color
+          color,
+          size
         });
       }
     }
 
+    // Set or update shipping option
     cart.shippingOption = shippingOption || cart.shippingOption || 'free';
     cart.updatedAt = Date.now();
 
@@ -77,7 +86,7 @@ exports.addToCart = async (req, res) => {
 exports.updateCartItem = async (req, res) => {
   try {
     const { itemId } = req.params;
-    const { quantity } = req.body;
+    const { quantity, color, size } = req.body;
 
     if (quantity < 1) {
       return res.status(400).json({ message: 'Quantity must be at least 1' });
@@ -86,7 +95,7 @@ exports.updateCartItem = async (req, res) => {
     const cart = await Cart.findOne({ user: req.user._id });
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
-    // Find item by Mongoose .id() or fallback manual find
+    // Find item in cart by ID
     let item = cart.items.id(itemId);
     if (!item) {
       item = cart.items.find(i => i._id && i._id.toString() === itemId);
@@ -94,14 +103,19 @@ exports.updateCartItem = async (req, res) => {
 
     if (!item) return res.status(404).json({ message: 'Item not found in cart' });
 
+    // Update item fields
     item.quantity = quantity;
+    if (color) item.color = color;
+    if (size) item.size = size;
+
     await cart.save();
 
-    res.status(200).json({ message: 'Item quantity updated', cart });
+    res.status(200).json({ message: 'Cart item updated', cart });
   } catch (err) {
     res.status(500).json({ message: 'Error updating cart item', error: err.message });
   }
 };
+
 
 exports.removeCartItem = async (req, res) => {
   try {

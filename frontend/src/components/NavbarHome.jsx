@@ -118,9 +118,11 @@ export default function Navbar({ links }) {
           className={`flex items-center space-x-4 transition-colors duration-300 ${isScrolled ? 'text-green-700' : 'lg:text-white'
             }`}
         >
-          <NavLink to="/cart">
-            <ShoppingCart className="w-6 h-6 cursor-pointer hover:text-green-500 transition" />
-          </NavLink>
+          {user && (
+            <NavLink to="/cart">
+              <ShoppingCart className="w-6 h-6 cursor-pointer hover:text-green-500 transition" />
+            </NavLink>
+          )}
           {user && (
             <NavLink to="/wishlist">
               <Heart className="w-6 h-6 cursor-pointer hover:text-green-500 transition" />
