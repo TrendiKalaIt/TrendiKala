@@ -11,7 +11,9 @@ const productRoutes = require('./routes/productRoutes');
 const userRoutes = require('./routes/userRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const cartRoutes = require('./routes/cartRoutes');
-const orderRoutes = require('./routes/orderRoutes')
+const orderRoutes = require('./routes/orderRoutes');
+const addressRoutes = require('./routes/addressRoutes');
+
 
 const app = express(); // Initialize Express
 
@@ -32,7 +34,9 @@ app.use('/api/auth', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
-app.use('/api/orders', orderRoutes)
+app.use('/api/orders', orderRoutes);
+app.use('/api/addresses', addressRoutes);
+
 
 // Test POST route
 app.post('/test', (req, res) => {

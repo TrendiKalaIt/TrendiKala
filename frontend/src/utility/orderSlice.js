@@ -67,3 +67,9 @@ export const {
 } = orderSlice.actions;
 
 export default orderSlice.reducer;
+
+
+// ✅ Selector to get placed order
+export const selectPlacedOrder = (state) => state.order.currentOrder;
+
+

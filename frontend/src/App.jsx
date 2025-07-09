@@ -22,6 +22,7 @@ import ErrorPage from './pages/ErrorPage'
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import OTPVerification from './pages/OTPVerification';
+import SearchResults  from './pages/SearchResults'
 
 
 
@@ -49,6 +50,7 @@ function App() {
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/checkout" element={<CheckoutDetails />} />
               <Route path="/thankyou" element={<Thankyou />} />
+              <Route path="/search" element={<SearchResults />} />
               {/* add more routes here */}
             </Route>
 

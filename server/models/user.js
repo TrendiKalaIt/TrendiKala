@@ -1,64 +1,27 @@
-// //MongoDb Con
-// const mongoose = require('mongoose');
-// const UserSchema = new mongoose.Schema({
-//     name: {
-//         type: String
-//     },
-//     email: {
-//         type: String,
-//         required: true,
-//         unique: true,
-//         lowercase: true,
-//         trim: true,
-//     },
-//     password: {
-//         type: String,
-//         required: true,
-//     },
-//     createdAt: {
-//         type: Date,
-//         default: Date.now,
-//     }
-// });
+// models/User.js
 
-// module.exports = mongoose.model('User', UserSchema);
-
-
-
-
-//MongoDb Con
 const mongoose = require('mongoose');
-const UserSchema = new mongoose.Schema({
-    name: {
-        type: String
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
-    },
-        mobile: {
-        type: String,
-        required: true, 
-        trim: true,
-    },
 
-    password: {
-        type: String,
-        required: true,
-    },
-    otp: String,
-    otpExpires: Date,
-    isVerified: {
-        type: Boolean,
-        default: false,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    }
+const addressSchema = new mongoose.Schema({
+  fullName: String,
+  streetAddress: String,
+  apartment: String,
+  townCity: String,
+  state: String,
+  phoneNumber: String,
+  emailAddress: String,
+}, { _id: true }); 
+
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  mobile: { type: String, required: true, trim: true },
+  password: { type: String, required: true },
+  otp: String,
+  otpExpires: Date,
+  isVerified: { type: Boolean, default: false },
+  addresses: [addressSchema], //store multiple addresses
+  createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.models.User || mongoose.model('User', UserSchema);

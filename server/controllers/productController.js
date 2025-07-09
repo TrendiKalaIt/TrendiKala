@@ -296,3 +296,37 @@ exports.addProductReview = async (req, res) => {
         res.status(500).json({ message: 'Failed to add review', error: err.message });
     }
 };
+
+
+
+
+// Search products by name (partial match)
+exports.searchProducts = async (req, res) => {
+  try {
+    const query = req.query.query?.trim();
+
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search query is required',
+      });
+    }
+
+    const products = await Product.find({
+      productName: { $regex: query, $options: 'i' }, // case-insensitive match
+    });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      data: products,
+    });
+  } catch (error) {
+    console.error('Search Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to search products',
+      error: error.message,
+    });
+  }
+};

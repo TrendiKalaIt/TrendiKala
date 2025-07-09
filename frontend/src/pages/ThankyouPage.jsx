@@ -1,115 +1,128 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { clearOrderDetails, clearCartFromCheckout, resetCheckoutState } from '../utility/checkoutSlice'; // Import new actions
-import { clearBuyNowProduct, clearOrder } from '../utility/orderSlice'; // Assuming clearBuyNowProduct is handled here
-import { clearCart } from '../utility/cartSlice'; // Make sure this is imported if it refers to the primary cart slice
-import { CheckCircle } from 'lucide-react'; // Ensure CheckCircle is imported
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { CheckCircle } from 'lucide-react';
+
+import { clearOrder, selectPlacedOrder } from '../utility/orderSlice'; // Adjust path if needed
 
 const Thankyou = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // These clear actions ensure that when the user returns from /thankyou
-    // to any other page, the cart and checkout details are reset.
-    dispatch(clearOrderDetails());      // Clears orderDetails (buy now item)
-    dispatch(clearCartFromCheckout()); // Clears the temporary cart array used in checkout
-    dispatch(clearBuyNowProduct());    // Clears the buy now product from orderSlice if you use it for that purpose
-    dispatch(clearOrder());            // Clears any stored 'currentOrder' from orderSlice
-    dispatch(clearCart());             // Ensures the primary cart in cartSlice is cleared
-                                       // This is crucial if the user's cart in the DB was cleared,
-                                       // but the frontend Redux state wasn't updated by a cart-specific fetch.
-  }, [dispatch]);
+  const orderDetails = useSelector(selectPlacedOrder);
+
+  // Show loading if orderDetails not available yet
+  if (!orderDetails) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg font-semibold">Loading your order details...</p>
+      </div>
+    );
+  }
+
+  const calculateSubtotal = (items) =>
+    items?.reduce((acc, item) => acc + item.discountPrice * item.quantity, 0).toFixed(2);
+
+  const handleBackToShopping = () => {
+    dispatch(clearOrder());
+    navigate('/');
+  };
 
   return (
-    <div className="min-h-screen  flex items-center justify-center  ">
-      <div className="w-full  bg-white shadow-lg  p-6 ">
-        {/* Thank You Message */}
-        <div className="bg-[#D4F387] text-green-800 p-6 rounded-xl flex flex-col items-center text-center mb-8 shadow-md">
-          <div className="flex items-center mb-3">
-            <h2 className="text-2xl sm:text-3xl font-bold mr-3">Jenny, Thank-you for Your Order!</h2>
-            {/* Replaced SVG with Lucide React CheckCircle icon */}
-            <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" />
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center lg:p-4 font-inter">
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10">
+        {/* Thank You Message Section */}
+        <div className="bg-gradient-to-r from-[#D4F387] to-[#A8E6CF] text-green-900 p-6 sm:p-8 rounded-2xl flex flex-col items-center text-center mb-8 shadow-lg">
+          <div className="flex lg:flex-row flex-col items-center mb-4">
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold lg:font-extrabold mr-3 leading-tight">
+              {orderDetails?.shippingInfo?.fullName}, Thank You for Your Order!
+            </h2>
+            <CheckCircle className="lg:w-10 lg:h-10 h-8 w-10 mt-2 text-green-700 animate-bounce" />
           </div>
-          <p className="text-xl font-medium mb-2">Order Id:014210012</p>
-          <p className="text-gray-700 text-base sm:text-lg">
-            We appreciate your order! It's now being packed, and you'll receive tracking info via email shortly.
+          <p className="lg:text-xl sm:text-2xl font-bold mb-3 text-green-800">
+            Order ID: <span className="text-green-700">{orderDetails.orderId}</span>
+          </p>
+          <p className="text-gray-700 text-base sm:text-lg max-w-prose">
+            We appreciate your order! It's now being packed, and you'll receive tracking information via email shortly at{' '}
+            <span className="font-semibold">{orderDetails?.shippingInfo?.emailAddress}</span>.
           </p>
         </div>
 
         {/* Order Details Table */}
-        <div className="mb-8">
+        <div className="mb-8 p-4 border border-gray-200 rounded-xl shadow-sm">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-5 text-center">Order Summary</h3>
           <div className="flex justify-between border-b-2 border-gray-300 pb-3 mb-4">
-            <span className="font-semibold text-gray-700 text-lg">Item</span>
-            <span className="font-semibold text-gray-700 text-lg">Total</span>
+            <span className="font-semibold text-gray-700 text-lg sm:text-xl">Item</span>
+            <span className="font-semibold text-gray-700 text-lg sm:text-xl">Total</span>
           </div>
 
-          {/* Order Item 1 */}
-          <div className="flex justify-between items-center py-3 border-b border-gray-200">
-            <div className="flex items-center">
-              <img
-                src="https://placehold.co/60x60/e0ffe0/000000?text=👗"
-                alt="Blue skirt"
-                className="w-16 h-16 rounded-lg mr-4"
-              />
-              <div>
-                <p className="text-gray-800 font-medium">Blue skirt</p>
-                <p className="text-gray-500 text-sm">QTY: 1</p>
+          {orderDetails?.items?.map((item, index) => (
+            <div key={index} className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
+              <div className="flex items-center">
+                <img
+                  src={item.image}
+                  alt={item.productName}
+                  className="w-16 h-16 rounded-lg mr-4 object-cover shadow-sm"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://placehold.co/60x60/cccccc/333333?text=N/A";
+                  }}
+                />
+                <div >
+                  <p className="text-gray-800 font-bold lg:text-2xl sm:text-lg">{item.productName}</p>
+                  <p className="text-gray-500 font-semibold lg:text-lg">QTY: {item.quantity}</p>
+                  <p className="text-gray-500 font-semibold lg:text-lg">Color: {item.color} | Size: {item.size}</p>
+                </div>
               </div>
+              <span className="text-gray-800 font-medium text-base sm:text-lg">₹{item.discountPrice.toFixed(2)}</span>
             </div>
-            <span className="text-gray-800 font-medium">$30.00</span>
-          </div>
-
-          {/* Order Item 2 */}
-          <div className="flex justify-between items-center py-3 border-b border-gray-200">
-            <div className="flex items-center">
-              <img
-                src="https://placehold.co/60x60/e0ffe0/000000?text=👗"
-                alt="Blue skirt"
-                className="w-16 h-16 rounded-lg mr-4"
-              />
-              <div>
-                <p className="text-gray-800 font-medium">Blue skirt</p>
-                <p className="text-gray-500 text-sm">QTY: 1</p>
-              </div>
-            </div>
-            <span className="text-gray-800 font-medium">$30.00</span>
-          </div>
+          ))}
         </div>
 
         {/* Delivery and Payment Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 p-4 border border-gray-200 rounded-xl shadow-sm">
           {/* Delivery Address */}
           <div>
-            <p className="text-gray-700 font-medium mb-2">Delivery Address:</p>
-            <p className="text-gray-800">123 acb street, abc city, Country</p>
+            <p className="text-gray-700 font-bold mb-3 text-lg sm:text-xl">Delivery Address</p>
+            <p className="text-gray-800 text-base sm:text-lg">
+              <span className="font-semibold">{orderDetails?.shippingInfo?.fullName}</span><br />
+              {orderDetails?.shippingInfo?.streetAddress}, {orderDetails?.shippingInfo?.apartment}<br />
+              {orderDetails?.shippingInfo?.townCity}<br />
+              Phone: {orderDetails?.shippingInfo?.phoneNumber}
+            </p>
           </div>
 
           {/* Subtotals and Total */}
-          <div className="space-y-2 text-right">
-            <div className="flex justify-between text-gray-700">
+          <div className="space-y-3 text-right">
+            <div className="flex justify-between text-gray-700 text-base sm:text-lg">
               <span>Subtotal:</span>
-              <span className="font-semibold">$30.00</span>
+              <span className="font-semibold">₹{calculateSubtotal(orderDetails?.items)}</span>
             </div>
-            <div className="flex justify-between text-gray-700">
-              <span>Subtotal:</span> {/* Assuming this is a placeholder for shipping/tax etc. */}
-              <span className="font-semibold">$30.00</span>
+            <div className="flex justify-between text-gray-700 text-base sm:text-lg">
+              <span>Shipping:</span>
+              <span className="font-semibold">₹{orderDetails?.shippingCost?.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-lg font-bold text-gray-900 border-t-2 border-gray-200 pt-2">
+            <div className="flex justify-between text-xl sm:text-2xl font-bold text-gray-900 border-t-2 border-gray-200 pt-3">
               <span>Total:</span>
-              <span>$30.00</span>
+              <span>₹{orderDetails?.totalAmount?.toFixed(2)}</span>
             </div>
           </div>
 
           {/* Payment Method */}
           <div>
-            <p className="text-gray-700 font-medium mb-2">Payment Method</p>
-            <p className="text-gray-800">COD</p>
+            <p className="text-gray-700 font-bold mb-2 text-lg sm:text-xl">Payment Method</p>
+            <p className="text-gray-800 text-base sm:text-lg">
+              {orderDetails?.paymentMethod === 'cashOnDelivery' ? 'Cash on Delivery' : 'Bank Transfer'}
+            </p>
           </div>
         </div>
 
         {/* Back to Shopping Button */}
-        <div className="flex justify-center">
-          <button className="bg-green-600 text-white py-3 px-8 rounded-full font-semibold text-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out">
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={handleBackToShopping}
+            className="bg-green-600 text-white py-3 px-8 rounded-full font-semibold text-lg shadow-lg hover:bg-green-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300"
+          >
             Back to Shopping
           </button>
         </div>

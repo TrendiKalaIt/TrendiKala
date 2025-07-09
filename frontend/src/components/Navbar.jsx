@@ -57,7 +57,7 @@ export default function Navbar({ links }) {
         </div>
 
         {/* Desktop Links */}
-        <ul className="hidden md:ps-44 md:flex space-x-10 lg:space-x-14 text-base font-medium">
+        <ul className="hidden md:ps-44 md:flex space-x-10 lg:space-x-12 text-base font-medium">
           {links.map((link) => (
             <li key={link.name}>
               <NavLink
@@ -83,7 +83,7 @@ export default function Navbar({ links }) {
               <Heart className="w-6 h-6 cursor-pointer hover:text-green-500 transition" />
             </NavLink>
           )}
-          <Search className="w-6 h-6 hover:text-green-500 transition" onClick={() => setIsSearchInputOpen(!isSearchInputOpen)} />
+          {/* <Search className="w-6 h-6 hover:text-green-500 transition" onClick={() => setIsSearchInputOpen(!isSearchInputOpen)} /> */}
 
           {/* User Icon with Dropdown */}
           <div className="relative user-dropdown">
@@ -99,7 +99,7 @@ export default function Navbar({ links }) {
               </svg>
             </button>
 
-            {/* ✅ Reusable Dropdown (visible on both mobile & desktop) */}
+            {/*  Reusable Dropdown (visible on both mobile & desktop) */}
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-50">
                 {user ? (
@@ -154,7 +154,7 @@ export default function Navbar({ links }) {
       )}
 
       {/* Search Input */}
-      {isSearchInputOpen && (
+      {/* {isSearchInputOpen && (
         <div className="px-4 mt-3 pb-2">
           <input
             type="text"
@@ -162,7 +162,7 @@ export default function Navbar({ links }) {
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-200 shadow"
           />
         </div>
-      )}
+      )} */}
     </nav>
   );
 }

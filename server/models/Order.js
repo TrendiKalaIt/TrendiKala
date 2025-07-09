@@ -1,11 +1,10 @@
-// models/Order.js
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true }, // Added required
-  productName: { type: String, required: true }, // Added required
-  quantity: { type: Number, required: true, min: 1 }, // Added required, min
-  discountPrice: { type: Number, required: true }, // Added required
+  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  productName: { type: String, required: true },
+  quantity: { type: Number, required: true, min: 1 },
+  discountPrice: { type: Number, required: true },
   image: { type: String },
   color: { type: String },
   size: { type: String }
@@ -21,23 +20,25 @@ const shippingInfoSchema = new mongoose.Schema({
 }, { _id: false });
 
 const orderSchema = new mongoose.Schema({
+  orderId: {
+    type: Number,
+    unique: true,      // ✅ Makes sure it's unique
+    index: true        // ✅ Good for fast searching
+  },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   items: [orderItemSchema],
   shippingInfo: shippingInfoSchema,
-  paymentMethod: { type: String, enum: ['bank', 'cashOnDelivery'], default: 'cashOnDelivery', required: true }, // Added required
-  // shippingOption: { type: String, enum: ['free', 'express', 'pickup'], default: 'free' }, // This field might become redundant if you only have a fixed delivery charge. You can remove it or repurpose it.
-  
-  // --- ADDED/MODIFIED FIELDS ---
-  shippingCost: { // New field to store the calculated delivery charge
-    type: Number,
-    required: true, // It's always calculated, so make it required
-    default: 0 // A default value if not provided, though it should be
-  },
-  totalAmount: { // Ensure this is a Number and required
+  paymentMethod: { type: String, enum: ['bank', 'cashOnDelivery'], default: 'cashOnDelivery', required: true },
+
+  shippingCost: {
     type: Number,
     required: true,
+    default: 0
   },
-  // --- END ADDED/MODIFIED FIELDS ---
+  totalAmount: {
+    type: Number,
+    required: true
+  },
 
   status: { type: String, default: 'Processing' },
   createdAt: { type: Date, default: Date.now }

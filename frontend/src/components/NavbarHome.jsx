@@ -14,6 +14,8 @@ export default function Navbar({ links }) {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchText, setSearchText] = useState('');
+
 
   // Scroll effect
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function Navbar({ links }) {
         </div>
 
         {/* Desktop Links */}
-        <ul className="hidden md:ps-44 md:flex space-x-10 lg:space-x-6 text-base font-medium">
+        <ul className="hidden md:ps-44 md:flex space-x-10 lg:space-x-5 text-base font-medium">
           {links.map((link) => (
             <li key={link.name}>
               <NavLink
@@ -129,10 +131,10 @@ export default function Navbar({ links }) {
             </NavLink>
           )}
 
-          <Search
+          {/* <Search
             className="w-6 h-6 cursor-pointer hover:text-green-500 transition"
             onClick={() => setIsSearchInputOpen(!isSearchInputOpen)}
-          />
+          /> */}
 
           {/* User/Login Button with Dropdown */}
           <div className="relative user-dropdown hidden md:block">
@@ -283,15 +285,24 @@ export default function Navbar({ links }) {
       )}
 
       {/* Search Input */}
-      {isSearchInputOpen && (
+      {/* {isSearchInputOpen && (
         <div className="px-4 mt-3 pb-2">
           <input
             type="text"
             placeholder="Search products, stories..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && searchText.trim()) {
+                navigate(`/search?query=${encodeURIComponent(searchText.trim())}`);
+                setIsSearchInputOpen(false);
+              }
+            }}
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-200 shadow"
           />
+
         </div>
-      )}
+      )} */}
     </nav>
   );
 }
