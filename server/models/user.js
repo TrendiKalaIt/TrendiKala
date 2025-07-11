@@ -8,9 +8,14 @@ const addressSchema = new mongoose.Schema({
   apartment: String,
   townCity: String,
   state: String,
+  zipcode: {
+    type: String,
+    required: true,
+    match: [/^\d{6}$/, 'Please enter a valid 6-digit PIN code'],
+  },
   phoneNumber: String,
   emailAddress: String,
-}, { _id: true }); 
+}, { _id: true });
 
 const UserSchema = new mongoose.Schema({
   name: String,

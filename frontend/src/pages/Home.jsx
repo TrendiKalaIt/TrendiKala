@@ -16,6 +16,13 @@ const Home = () => {
   const [visibleCount, setVisibleCount] = useState(4);
   const [error, setError] = useState(null);
 
+  const gradientStyle = {
+    background: '#bdc3c7', // fallback for old browsers
+    backgroundImage: 'linear-gradient(to right, #2c3e50, #bdc3c7)',
+    height: '100vh', // example height
+  };
+
+
   const handleSeeMore = () => {
     setVisibleCount((prevCount) => prevCount + 4);
   };

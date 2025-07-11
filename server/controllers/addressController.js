@@ -9,11 +9,12 @@ exports.saveAddress = async (req, res) => {
       apartment,
       townCity,
       state,
+      zipcode,
       phoneNumber,
       emailAddress,
     } = req.body;
 
-    if (!fullName || !streetAddress || !townCity || !state || !phoneNumber || !emailAddress) {
+    if (!fullName || !streetAddress || !townCity || !zipcode || !state || !phoneNumber || !emailAddress) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -23,6 +24,7 @@ exports.saveAddress = async (req, res) => {
       apartment,
       townCity,
       state,
+      zipcode,
       phoneNumber,
       emailAddress,
     };

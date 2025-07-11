@@ -35,8 +35,8 @@ export default function Navbar({ links }) {
     navigate('/');
   };
 
-  const handleProfileClick = () => {
-    navigate('/profile');
+  const handleMyOrdersClick = () => {
+    navigate('/my-orders');
     setShowDropdown(false);
     setIsMenuOpen(false);
   };
@@ -104,7 +104,7 @@ export default function Navbar({ links }) {
               <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-50">
                 {user ? (
                   <>
-                    <button onClick={handleProfileClick} className="w-full text-left px-4 py-2 hover:bg-gray-100">Profile</button>
+                    <button onClick={handleMyOrdersClick} className="w-full text-left px-4 py-2 hover:bg-gray-100">My Orders</button>
                     <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
                   </>
                 ) : (

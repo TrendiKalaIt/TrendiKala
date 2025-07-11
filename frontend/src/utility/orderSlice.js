@@ -1,24 +1,50 @@
+
 // redux/features/orderSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+//  Place order (logged-in or guest)
 export const placeOrder = createAsyncThunk(
   'order/placeOrder',
   async ({ orderPayload, token }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(
-        '/api/orders/place',
-        orderPayload,
-        {
+      const isLoggedIn = Boolean(token);
+      const url = isLoggedIn ? '/api/orders/place' : '/api/orders/guest-place-order';
+      const config = isLoggedIn
+        ? {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         }
-      );
+        : {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        };
+
+      const res = await axios.post(url, orderPayload, config);
       return res.data.order;
     } catch (err) {
+      console.error('Place order error:', err);
       return rejectWithValue(err.response?.data?.message || 'Failed to place order');
+    }
+  }
+);
+
+//  Fetch my orders
+export const fetchMyOrders = createAsyncThunk(
+  'order/fetchMyOrders',
+  async (token, { rejectWithValue }) => {
+    try {
+      const res = await axios.get('/api/orders/my-orders', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data.orders;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to fetch orders');
     }
   }
 );
@@ -29,7 +55,9 @@ const orderSlice = createSlice({
     loading: false,
     error: null,
     currentOrder: null,
-    buyNowProduct: null, // ✅ Add this
+    buyNowProduct: null,
+    myOrders: [],
+    showOrderHistory: false, // control showing order history
   },
   reducers: {
     clearOrder: (state) => {
@@ -37,14 +65,18 @@ const orderSlice = createSlice({
       state.error = null;
     },
     setBuyNowProduct: (state, action) => {
-      state.buyNowProduct = action.payload; // ✅ Set buy now item
+      state.buyNowProduct = action.payload;
     },
     clearBuyNowProduct: (state) => {
-      state.buyNowProduct = null; // ✅ Clear after order placed
+      state.buyNowProduct = null;
+    },
+    toggleOrderHistory: (state, action) => {
+      state.showOrderHistory = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
+      // placeOrder
       .addCase(placeOrder.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -56,20 +88,36 @@ const orderSlice = createSlice({
       .addCase(placeOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // fetchMyOrders
+      .addCase(fetchMyOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMyOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.myOrders = action.payload;
+      })
+      .addCase(fetchMyOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
 export const {
   clearOrder,
-  setBuyNowProduct,      // ✅ Export this
-  clearBuyNowProduct,    // ✅ Export this
+  setBuyNowProduct,
+  clearBuyNowProduct,
+  toggleOrderHistory,
 } = orderSlice.actions;
 
 export default orderSlice.reducer;
 
-
-// ✅ Selector to get placed order
+//  Selectors
 export const selectPlacedOrder = (state) => state.order.currentOrder;
-
-
+export const selectMyOrders = (state) => state.order.myOrders;
+export const selectOrderLoading = (state) => state.order.loading;
+export const selectOrderError = (state) => state.order.error;
+export const selectOrderHistoryVisibility = (state) => state.order.showOrderHistory;

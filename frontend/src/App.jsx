@@ -22,7 +22,10 @@ import ErrorPage from './pages/ErrorPage'
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import OTPVerification from './pages/OTPVerification';
-import SearchResults  from './pages/SearchResults'
+import SearchResults  from './pages/SearchResults';
+import FAQPage from './pages/FAQPage';
+import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
+import ContactUs from './pages/ContactUs';
 
 
 
@@ -30,6 +33,7 @@ import SearchResults  from './pages/SearchResults'
 // Redux imports
 import { Provider } from 'react-redux'; // Import Provider
 import store from './utility/store';
+import MyOrdersPage from './pages/MyOrdersPage';
 
 
 function App() {
@@ -51,6 +55,10 @@ function App() {
               <Route path="/checkout" element={<CheckoutDetails />} />
               <Route path="/thankyou" element={<Thankyou />} />
               <Route path="/search" element={<SearchResults />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/terms" element={<TermsAndConditionsPage />} />
+              <Route path="/contact" element={<ContactUs />} />
+              <Route path="/my-orders" element={<MyOrdersPage />} />
               {/* add more routes here */}
             </Route>
 
@@ -59,7 +67,7 @@ function App() {
             </Route>
 
             <Route element={<AuthLayout />}>
-              <Route path="/signin" element={<SignIn />} /> {/* Ensure this path matches your Navbar's navigate('/login') */}
+              <Route path="/signin" element={<SignIn />} /> 
               <Route path="/signup" element={<SignUp />} />
               <Route path="/verify-otp" element={<OTPVerification />} />
             </Route>

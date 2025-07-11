@@ -195,17 +195,17 @@ export const outfitGridItems = {
     {
       id: 1,
       title: "New",
-      imageUrl: imageC8,
+      imageUrl: imageC4,
     },
     {
       id: 2,
       title: "New",
-      imageUrl: imageC9,
+      imageUrl: imageC5,
     },
     {
       id: 3,
       title: "New",
-      imageUrl: imageC10,
+      imageUrl: imageC7,
     },
     {
       id: 4,

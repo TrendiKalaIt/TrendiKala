@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { carouselSlides, imageC3,imageC4, Img6 } from '../assets/assets';
+import { carouselSlides, imageC3, imageC7, Img6 } from '../assets/assets';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    navigate('/allproducts');  // or wherever you want to navigate
+  };
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,12 +25,12 @@ const HeroSection = () => {
     <section
       className="bg-white text-gray-800"
       style={{
-        backgroundImage: `url(${imageC4})`,
+        backgroundImage: `url(${imageC7})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
     >
-      <div className="container backdrop-blur-sm mx-auto">
+      <div className="container backdrop-blur-[4px] mx-auto">
         <div className="flex flex-col md:flex-row overflow-hidden">
           {/* Left */}
           <motion.div
@@ -53,7 +60,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="leading-relaxed text-lg font-bold text-[#93a87e] mb-6 text-justify"
+                className="leading-relaxed text-lg font-bold text-[#a5e665c8] mb-6 text-justify"
               >
                 Trendi Kala brings you elegant ethnic fashion that blends tradition with trend,
                 offering timeless pieces designed for the bold, modern Indian.
@@ -61,6 +68,7 @@ const HeroSection = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handleViewDetails}
                 className="bg-[#93A87E] hover:bg-[#93a87ec6] text-white font-semibold py-3 px-8 rounded-full shadow-lg transition duration-300 m-auto"
               >
                 View Details
@@ -81,7 +89,7 @@ const HeroSection = () => {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="text-3xl w-2/3 md:text-4xl font-bold leading-tight mt-10 md:mt-20 text-[#93A87E]"
+                className="text-3xl w-2/3 md:text-4xl font-bold leading-tight mt-10 md:mt-20 text-[#a5e665c8]"
               >
                 "{title.toUpperCase()}"
               </motion.h1>
@@ -117,7 +125,7 @@ const HeroSection = () => {
             </div>
 
             {/* Mobile Text */}
-            <div className="flex flex-col items-center text-[#93A87E] text-center px-4 pb-6 md:hidden">
+            <div className="flex flex-col items-center text-[#a5e665c8] text-center px-4 pb-6 md:hidden">
               <motion.h2
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}

@@ -1,49 +1,41 @@
-// utility/checkoutSlice.js
+
+// src/utility/checkoutSlice.js
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  orderDetails: null,       // for Buy Now (single product)
-  cartFromCheckout: [],     // for full cart checkout
+  orderDetails: null,      // for Buy Now (single product)
+  cartFromCheckout: [],    // for full cart checkout
 };
 
-export default function checkoutReducer(state = initialState, action) {
-  switch (action.type) {
-    case 'checkout/setOrderDetails':
-      return { ...state, orderDetails: action.payload };
-    case 'checkout/setCartFromCheckout':
-      return { ...state, cartFromCheckout: action.payload };
-    case 'checkout/clearOrderDetails':
-      return { ...state, orderDetails: null };
-    case 'checkout/clearCartFromCheckout': // <--- ADD THIS CASE
-      return { ...state, cartFromCheckout: [] };
-    case 'checkout/resetCheckoutState': // <--- OPTIONAL: ADD THIS CASE for full reset
-        return initialState;
-    default:
-      return state;
-  }
-}
-
-// For Buy Now (single product)
-export const setOrderDetails = (product) => ({
-  type: 'checkout/setOrderDetails',
-  payload: product,
+const checkoutSlice = createSlice({
+  name: 'checkout',
+  initialState,
+  reducers: {
+    setOrderDetails: (state, action) => {
+      state.orderDetails = action.payload;
+    },
+    clearOrderDetails: (state) => {
+      state.orderDetails = null;
+    },
+    setCartFromCheckout: (state, action) => {
+      state.cartFromCheckout = action.payload;
+    },
+    clearCartFromCheckout: (state) => {
+      state.cartFromCheckout = [];
+    },
+    resetCheckoutState: (state) => {
+      state.orderDetails = null;
+      state.cartFromCheckout = [];
+    },
+  },
 });
 
-// Clear Buy Now data
-export const clearOrderDetails = () => ({
-  type: 'checkout/clearOrderDetails',
-});
+export const {
+  setOrderDetails,
+  clearOrderDetails,
+  setCartFromCheckout,
+  clearCartFromCheckout,
+  resetCheckoutState,
+} = checkoutSlice.actions;
 
-// For Cart Checkout (full cart array)
-export const setCartFromCheckout = (cartArray) => ({
-  type: 'checkout/setCartFromCheckout',
-  payload: cartArray,
-});
-
-// <--- ADD THESE NEW EXPORTS ---
-export const clearCartFromCheckout = () => ({
-  type: 'checkout/clearCartFromCheckout',
-});
-
-export const resetCheckoutState = () => ({ // OPTIONAL
-    type: 'checkout/resetCheckoutState',
-});
+export default checkoutSlice.reducer;

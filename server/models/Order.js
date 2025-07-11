@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
@@ -22,12 +23,16 @@ const shippingInfoSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
   orderId: {
     type: Number,
-    unique: true,      // ✅ Makes sure it's unique
-    index: true        // ✅ Good for fast searching
+    unique: true,
+    index: true
   },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  // user optional for guest
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+
   items: [orderItemSchema],
+
   shippingInfo: shippingInfoSchema,
+
   paymentMethod: { type: String, enum: ['bank', 'cashOnDelivery'], default: 'cashOnDelivery', required: true },
 
   shippingCost: {
@@ -35,13 +40,23 @@ const orderSchema = new mongoose.Schema({
     required: true,
     default: 0
   },
+
   totalAmount: {
     type: Number,
     required: true
   },
 
   status: { type: String, default: 'Processing' },
-  createdAt: { type: Date, default: Date.now }
+
+  createdAt: { type: Date, default: Date.now },
+
+  // New field for guest order
+  isGuest: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model('Order', orderSchema);
+
+
+
+
+

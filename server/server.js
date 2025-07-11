@@ -13,6 +13,7 @@ const wishlistRoutes = require('./routes/wishlistRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const addressRoutes = require('./routes/addressRoutes');
+const contactRoutes = require('./routes/contactRoutes');
 
 
 const app = express(); // Initialize Express
@@ -36,6 +37,7 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/addresses', addressRoutes);
+app.use('/api/contact', contactRoutes);
 
 
 // Test POST route

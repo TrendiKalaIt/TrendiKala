@@ -15,6 +15,14 @@ import Img13 from '../assets/img13.webp'
 import Img14 from '../assets/img14.webp'
 import Bgremove from '../assets/posterbgremove.png'
 import Logo from '../assets/trendikala_logo_bg.png'
+import Packaging from '../assets/Packaging.jpg'
+import Manufactur from '../assets/Manufacturing.jpg'
+import Quality from '../assets/Quality.jpg'
+import Design from '../assets/design.jpg'
+import Team from '../assets/team.jpg'
+import Aboutbg from '../assets/aboutbg.jpg'
+import Manufacturingbg from '../assets/Manufacturingbg.jpg'
+
 
 export {
     Img1,
@@ -32,7 +40,16 @@ export {
     Img13,
     Img14,
     Logo,
-    Bgremove
+    Bgremove,
+    Packaging,
+    Manufactur,
+    Quality,
+    Design,
+    Team,
+    Aboutbg,
+    Manufacturingbg,
+
+    
 };
 
 export const productData = [

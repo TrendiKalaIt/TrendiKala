@@ -88,12 +88,12 @@ export default function Navbar({ links }) {
               className="w-full h-full object-contain"
             />
           </div>
-          <div className="hidden md:block border-l-2 border-green-700 h-10 mx-3" />
+          <div className="hidden md:block border-l-2 border-green-700 h-12 mx-3" />
           <div className="hidden md:block">
-            <span className="block text-green-700 font-semibold text-sm tracking-[.6rem]">
+            <span className="block text-green-400 font-bold text-sm tracking-[.6rem]">
               TRENDI <br /> KALA
             </span>
-            <span className="block text-[10px] text-gray-500 mt-1">
+            <span className="block text-[10px] text-green-400 mt-1">
               TRENDS & KALA IN <br /> EVERY STICH
             </span>
           </div>
@@ -172,12 +172,12 @@ export default function Navbar({ links }) {
               <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-50">
                 <button
                   onClick={() => {
-                    navigate('/profile');
+                    navigate('/my-orders');
                     setShowUserDropdown(false);
                   }}
                   className="block text-green-500 w-full px-4 py-2 text-left hover:bg-gray-100"
                 >
-                  Profile
+                  My Orders
                 </button>
                 <button
                   onClick={handleLogout}

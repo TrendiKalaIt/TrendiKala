@@ -1,167 +1,159 @@
 import React from 'react';
-import { Truck, Headphones, ShieldCheck, Twitter, Instagram, Linkedin } from 'lucide-react';
+// Importing Lucide icons for a clean visual touch.
+// These icons are rendered as SVGs by Lucide React, so you don't handle SVG directly.
+import {
+  Sparkles,  // For quality/craftsmanship
+  Users,      // For community/team
+  Leaf,       // For sustainability/values
+  Heart,      // For passion/customer-centricity
+  Factory,    // For origin/production
+  Lightbulb,  // For innovation
+  Handshake   // For trust/partnership
+} from 'lucide-react';
 
+import { Packaging,Aboutbg } from '../assets/data';
 
-
-
-const AboutPage = () => {
+/**
+ * AboutUsPage Component
+ * This component renders a comprehensive "About Us" page for an e-commerce website.
+ * It features a hero section, brand story, core values, and a call to action,
+ * all styled with Tailwind CSS for a clean, responsive design.
+ */
+function AboutUs() { // Renamed to App as per instructions for the main component
   return (
-    <div className="font-sans antialiased text-gray-800">
-      {/* Our Story Section */}
-      <section className="container mx-auto py-16 px-4 flex flex-col md:flex-row items-center md:items-start md:space-x-12">
-        <div className="md:w-1/2 mb-8 md:mb-0">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Story</h1>
-          <p className="text-lg leading-relaxed mb-4">
-            Launched in 2015, Exclusive is South Asia's premier online shopping marketplace with an active presence in Bangladesh. Supported by wide range of tailored marketing, data and service solutions, Exclusive has 10,500 sellers and 300 brands and serves 3 millions customers across the region.
+    // Main container for the entire About Us page.
+    // Uses Tailwind for background color, padding, and min-height to ensure it fills the screen.
+    <div className="min-h-screen bg-gray-50 font-inter text-gray-800">
+      {/* Hero Section: A prominent introduction to the brand. */}
+      {/* Uses Tailwind for background image, overlay, text styling, and responsiveness. */}
+      <section
+        className="relative h-96 md:h-[500px] bg-cover bg-center flex items-center justify-center text-center p-4"
+        style={{ backgroundImage: `url(${Aboutbg})` }}
+
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black opacity-40"></div>
+        <div className="relative z-10 text-white max-w-3xl mx-auto">
+          {/* Main heading */}
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 font-playfair-display">
+            Crafting Experiences, One Product at a Time
+          </h1>
+          {/* Subheading */}
+          <p className="text-lg md:text-xl font-light">
+            Discover the passion, purpose, and people behind TRENDIKALA.
           </p>
-          <p className="text-lg leading-relaxed">
-            Exclusive has more than 1 Million products to offer, growing at a very fast. Exclusive offers a diverse assortment in categories ranging from consumer.
+        </div>
+      </section>
+
+      {/* Our Story Section: Details the brand's journey and philosophy. */}
+      {/* Uses Tailwind for padding, background, shadow, and responsive layout (flex/grid). */}
+      <section className="container mx-auto py-16 px-4 md:px-8 bg-white rounded-xl shadow-lg mt-[-60px] relative z-20">
+        <div className="flex flex-col md:flex-row items-center gap-12">
+          {/* Story Content */}
+          <div className="md:w-1/2 text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 font-playfair-display text-green-700">Our Journey</h2>
+            <p className="text-lg mb-4 leading-relaxed">
+              Welcome to [Your E-commerce Brand], where every product tells a story. Founded in [Year] by [Founder's Name], our vision was to create more than just an online store; we aimed to build a community around quality, innovation, and exceptional service.
+            </p>
+            <p className="text-lg leading-relaxed">
+              From our humble beginnings, meticulously sourcing the finest materials and partnering with skilled artisans, we've grown into a trusted destination for [mention your product category, e.g., unique home decor, sustainable fashion, tech gadgets]. Our commitment remains unwavering: to bring you products that not only meet your needs but also enrich your life.
+            </p>
+          </div>
+          {/* Story Image */}
+          <div className="md:w-1/2">
+            <img
+              src={Packaging}
+              alt="Our Brand Story"
+              className="rounded-lg shadow-xl w-full h-auto object-cover"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = `https://placehold.co/600x400/E5E7EB/6B7280?text=Image+Not+Found`;
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Our Values Section: Highlights the core principles of the brand. */}
+      {/* Uses Tailwind for background, padding, and a responsive grid for value items. */}
+      <section className="bg-green-50 py-16 px-4 md:px-8 mt-16">
+        <div className="container mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 font-playfair-display text-green-700">Our Core Values</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {/* Value Item 1: Quality */}
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+              <Sparkles size={48} className="text-yellow-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-semibold mb-3">Uncompromising Quality</h3>
+              <p className="text-gray-600">
+                We are dedicated to offering products crafted with superior materials and meticulous attention to detail.
+              </p>
+            </div>
+            {/* Value Item 2: Customer Focus */}
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+              <Heart size={48} className="text-red-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-semibold mb-3">Customer Happiness</h3>
+              <p className="text-gray-600">
+                Your satisfaction is our priority. We strive to provide an exceptional shopping experience and support.
+              </p>
+            </div>
+            {/* Value Item 3: Innovation */}
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+              <Lightbulb size={48} className="text-blue-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-semibold mb-3">Constant Innovation</h3>
+              <p className="text-gray-600">
+                We continuously seek new ideas and trends to bring you fresh, exciting, and relevant products.
+              </p>
+            </div>
+            {/* Value Item 4: Sustainability (Optional, include if relevant) */}
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+              <Leaf size={48} className="text-green-600 mx-auto mb-4" />
+              <h3 className="text-2xl font-semibold mb-3">Conscious Sourcing</h3>
+              <p className="text-gray-600">
+                Committed to responsible practices, we prioritize ethical sourcing and sustainable production where possible.
+              </p>
+            </div>
+            {/* Value Item 5: Community (Optional, include if relevant) */}
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+              <Users size={48} className="text-emerald-600 mx-auto mb-4" /> {/* Changed from indigo-500 */}
+              <h3 className="text-2xl font-semibold mb-3">Building Community</h3>
+              <p className="text-gray-600">
+                We believe in fostering connections and building a vibrant community around our shared passions.
+              </p>
+            </div>
+            {/* Value Item 6: Transparency (Optional, include if relevant) */}
+            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1">
+              <Handshake size={48} className="text-teal-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-semibold mb-3">Trust & Transparency</h3>
+              <p className="text-gray-600">
+                We operate with integrity, ensuring clear communication and honest practices in all our dealings.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action Section */}
+      {/* Uses Tailwind for background, text, padding, and button styling. */}
+      <section className="  py-16 px-4 md:px-8 text-center mt-16">
+        <div className="container mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 font-playfair-display">
+            Ready to Explore Our Collections?
+          </h2>
+          <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+            Dive into our curated selection and find something truly special.
           </p>
-        </div>
-        <div className="md:w-1/2 h-96 w-full bg-slate-400 rounded-2xl">
-          {/* Use your actual image here */}
-          <img
-            src=""
-           
-            className="rounded-lg shadow-lg w-full h-auto object-cover" // Added w-full h-auto object-cover for better responsiveness
-          />
+          <a
+            href="/allproducts" 
+            className="inline-block bg-white text-green-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-colors duration-300 shadow-lg hover:shadow-xl"
+          >
+            Shop Now
+          </a>
         </div>
       </section>
 
-      {/* Statistics Section */}
-      <section className="container mx-auto py-16 px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Seller Count */}
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
-            {/* Using a placeholder for building/home icon as it's not a direct Lucide equivalent for this specific style */}
-            <div className="text-4xl text-gray-700 mb-2">🏠</div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-1">10.5k</h3>
-            <p className="text-gray-600">Sellers active our site</p>
-          </div>
-
-          {/* Monthly Product Sale */}
-          <div className="bg-rose-500 text-white p-6 rounded-lg shadow-md text-center">
-            {/* Using a placeholder for dollar icon, or you could use 'DollarSign' from Lucide if that fits */}
-            <div className="text-4xl mb-2">💲</div>
-            <h3 className="text-3xl font-bold mb-1">33k</h3>
-            <p className="text-white">Monthly Product Sale</p>
-          </div>
-
-          {/* Customer Active */}
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
-            {/* Using a placeholder for person group icon, or 'Users' from Lucide */}
-            <div className="text-4xl text-gray-700 mb-2">👥</div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-1">45.5k</h3>
-            <p className="text-gray-600">Customer active in our site</p>
-          </div>
-
-          {/* Annual Gross Sale */}
-          <div className="bg-white p-6 rounded-lg shadow-md text-center">
-            {/* Using a placeholder for money bag, or 'DollarSign' from Lucide if that fits */}
-            <div className="text-4xl text-gray-700 mb-2">💰</div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-1">25k</h3>
-            <p className="text-gray-600">Annual gross sale in our site</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section className="bg-white py-16 px-4">
-        <div className="container mx-auto">
-          <div className="flex flex-col lg:flex-row justify-center items-center lg:space-x-8 space-y-8 lg:space-y-0">
-            {/* Tom Cruise */}
-            <div className="w-full sm:w-80 border-2 border-dashed border-blue-500 rounded-lg p-6 flex flex-col items-center text-center shadow-md">
-              <img
-                src=""
-                alt="Tom Cruise"
-                className="w-40 h-40 rounded-full object-cover mb-4"
-              />
-              <h3 className="text-xl font-semibold mb-1">Tom Cruise</h3>
-              <p className="text-gray-600 mb-3">Founder & Chairman</p>
-              <div className="flex space-x-3 text-gray-500">
-                <a href="#" className="hover:text-blue-500"><Twitter size={20} /></a>
-                <a href="#" className="hover:text-blue-500"><Instagram size={20} /></a>
-                <a href="#" className="hover:text-blue-500"><Linkedin size={20} /></a>
-              </div>
-            </div>
-
-            {/* Emma Watson */}
-            <div className="w-full sm:w-80 border-2 border-dashed border-blue-500 rounded-lg p-6 flex flex-col items-center text-center shadow-md">
-              <img
-                src="" // Use imported image
-                alt="Emma Watson"
-                className="w-40 h-40 rounded-full object-cover mb-4"
-              />
-              <h3 className="text-xl font-semibold mb-1">Emma Watson</h3>
-              <p className="text-gray-600 mb-3">Managing Director</p>
-              <div className="flex space-x-3 text-gray-500">
-                <a href="#" className="hover:text-blue-500"><Twitter size={20} /></a>
-                <a href="#" className="hover:text-blue-500"><Instagram size={20} /></a>
-                <a href="#" className="hover:text-blue-500"><Linkedin size={20} /></a>
-              </div>
-            </div>
-
-            {/* Will Smith */}
-            <div className="w-full sm:w-80 border-2 border-dashed border-blue-500 rounded-lg p-6 flex flex-col items-center text-center shadow-md">
-              <img
-                src="" // Use imported image
-                alt="Will Smith"
-                className="w-40 h-40 rounded-full object-cover mb-4"
-              />
-              <h3 className="text-xl font-semibold mb-1">Will Smith</h3>
-              <p className="text-gray-600 mb-3">Product Designer</p>
-              <div className="flex space-x-3 text-gray-500">
-                <a href="#" className="hover:text-blue-500"><Twitter size={20} /></a>
-                <a href="#" className="hover:text-blue-500"><Instagram size={20} /></a>
-                <a href="#" className="hover:text-blue-500"><Linkedin size={20} /></a>
-              </div>
-            </div>
-          </div>
-          {/* Pagination dots if needed (as seen in image_1c1126.png) */}
-          <div className="flex justify-center mt-8 space-x-2">
-            <span className="h-2 w-2 bg-red-500 rounded-full"></span>
-            <span className="h-2 w-2 bg-gray-300 rounded-full"></span>
-            <span className="h-2 w-2 bg-gray-300 rounded-full"></span>
-            <span className="h-2 w-2 bg-gray-300 rounded-full"></span>
-          </div>
-        </div>
-      </section>
-
-      {/* Services/Features Section */}
-      <section className="bg-white py-16 px-4">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            {/* Free and Fast Delivery */}
-            <div className="flex flex-col items-center p-6">
-              <div className="bg-gray-800 text-white rounded-full p-4 mb-4">
-                <Truck size={32} /> {/* Lucide Truck icon */}
-              </div>
-              <h3 className="text-xl font-bold mb-2">FREE AND FAST DELIVERY</h3>
-              <p className="text-gray-600">Free delivery for all orders over $140</p>
-            </div>
-
-            {/* 24/7 Customer Service */}
-            <div className="flex flex-col items-center p-6">
-              <div className="bg-gray-800 text-white rounded-full p-4 mb-4">
-                <Headphones size={32} /> {/* Lucide Headphones icon */}
-              </div>
-              <h3 className="text-xl font-bold mb-2">24/7 CUSTOMER SERVICE</h3>
-              <p className="text-gray-600">Friendly 24/7 customer support</p>
-            </div>
-
-            {/* Money Back Guarantee */}
-            <div className="flex flex-col items-center p-6">
-              <div className="bg-gray-800 text-white rounded-full p-4 mb-4">
-                <ShieldCheck size={32} /> {/* Lucide ShieldCheck icon */}
-              </div>
-              <h3 className="text-xl font-bold mb-2">MONEY BACK GUARANTEE</h3>
-              <p className="text-gray-600">We return money within 30 days</p>
-            </div>
-          </div>
-        </div>
-      </section>
+     
     </div>
   );
-};
+}
 
-export default AboutPage;
+export default AboutUs;

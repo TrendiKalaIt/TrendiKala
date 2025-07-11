@@ -1,6 +1,6 @@
 // src/components/Footer.jsx
 import React from 'react';
-import { Link } from 'react-router-dom'; // ✅ Import Link for internal routing
+import { Link } from 'react-router-dom'; //  Import Link for internal routing
 import { SiRazorpay } from 'react-icons/si';
 import { FaGooglePay, FaCcMastercard } from 'react-icons/fa6';
 

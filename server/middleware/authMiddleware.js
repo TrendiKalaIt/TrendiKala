@@ -1,11 +1,14 @@
+
 const jwt = require('jsonwebtoken');
-const User = require('../models/user'); // Ensure path is correct
+const User = require('../models/user');
 
 module.exports = async function (req, res, next) {
   const authHeader = req.header('Authorization');
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Access Denied: No token provided or malformed token' });
+    // No token: treat as guest, allow request to continue
+    req.user = null;
+    return next();
   }
 
   const token = authHeader.split(' ')[1];
@@ -13,19 +16,19 @@ module.exports = async function (req, res, next) {
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
 
-    // ✅ Fetch full user document
     const user = await User.findById(verified.id || verified._id);
-
     if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+      // User not found, treat as guest or reject
+      req.user = null;  // or: return res.status(401).json({ message: 'User not found' });
+      return next();
     }
 
-    // ✅ Attach full user object to req.user
     req.user = user;
-
     next();
   } catch (error) {
-    console.error('Auth Middleware Error:', error.message);
-    res.status(401).json({ message: 'Invalid or expired token', error: error.message });
+    // Token invalid or expired: treat as guest (or optionally reject)
+    console.error('Auth Middleware Warning:', error.message);
+    req.user = null;
+    next();
   }
 };

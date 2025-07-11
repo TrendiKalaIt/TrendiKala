@@ -1,8 +1,9 @@
-// src/utiliti/auth/authSlice.js
+
+// src/utility/auth/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  user: JSON.parse(sessionStorage.getItem("user")) || null,
 };
 
 const authSlice = createSlice({
@@ -11,17 +12,25 @@ const authSlice = createSlice({
   reducers: {
     login(state, action) {
       state.user = action.payload;
-      localStorage.setItem("user", JSON.stringify(action.payload));
-      localStorage.setItem("token", action.payload.token); 
+
+      // ✅ Save to sessionStorage instead of localStorage
+      sessionStorage.setItem("user", JSON.stringify(action.payload));
+      sessionStorage.setItem("token", action.payload.token); 
     },
     logout(state) {
       state.user = null;
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-    },
 
+      // ✅ Remove from sessionStorage
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("token");
+    },
   },
 });
 
+// Export actions
 export const { login, logout } = authSlice.actions;
+
+// Add selector here
+export const selectCurrentUser = (state) => state.auth.user;
+
 export default authSlice.reducer;

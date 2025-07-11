@@ -1,7 +1,8 @@
 // src/components/Outfit.jsx
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
-import { outfitGridItems } from '../assets/assets'; // adjust path as needed
+import { outfitGridItems } from '../assets/assets';
+import { Link } from 'react-router-dom';
 
 function Outfit() {
   const { mainItem, otherItems } = outfitGridItems;
@@ -19,9 +20,11 @@ function Outfit() {
           />
           <div className="absolute bottom-4 left-4 text-white z-">
             <h2 className="text-3xl font-bold mb-2">{mainItem.title}</h2>
-            <button className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm font-semibold flex items-center">
-              {mainItem.buttonText} <ChevronRight size={16} className="ml-1" />
-            </button>
+            <Link to="/allproducts">
+              <button className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm font-semibold flex items-center">
+                {mainItem.buttonText} <ChevronRight size={16} className="ml-1" />
+              </button>
+            </Link>
           </div>
         </div>
 

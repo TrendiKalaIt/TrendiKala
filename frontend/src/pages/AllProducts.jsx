@@ -7,11 +7,11 @@ import { showLoader, hideLoader } from '../utility/loaderSlice';
 const Products = () => {
   const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(16);
+  const [visibleCount, setVisibleCount] = useState(8);
   const [error, setError] = useState(null);
 
   const handleSeeMore = () => {
-    setVisibleCount((prevCount) => prevCount + 16);
+    setVisibleCount((prevCount) => prevCount + 8);
   };
 
   useEffect(() => {

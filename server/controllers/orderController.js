@@ -66,7 +66,7 @@ exports.placeOrder = async (req, res) => {
         // --- COMMON Order Summary Table HTML (used by both emails) ---
         const orderItemsTableHtml = orderItems.map(item => `
             <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; font-size: 16px;">
+                <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: left; vertical-align: top; font-size: 16px;">
                     <strong>${item.productName}</strong><br />
                     <span style="font-size: 14px; color: #555;">
                         ${item.color ? `Color: ${item.color}` : ''}
@@ -74,9 +74,9 @@ exports.placeOrder = async (req, res) => {
                         ${item.size ? `Size: ${item.size}` : ''}
                     </span>
                 </td>
-                <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center; vertical-align: top; font-size: 16px;">${item.quantity}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right; vertical-align: top; font-size: 16px;">₹${item.discountPrice.toFixed(2)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right; vertical-align: top; font-size: 16px;">₹${(item.quantity * item.discountPrice).toFixed(2)}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; vertical-align: top; font-size: 16px;">${item.quantity}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; vertical-align: top; font-size: 16px;">₹${item.discountPrice.toFixed(2)}</td>
+                <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; vertical-align: top; font-size: 16px;">₹${(item.quantity * item.discountPrice).toFixed(2)}</td>
             </tr>
         `).join('');
 
@@ -84,25 +84,25 @@ exports.placeOrder = async (req, res) => {
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
                 <thead>
                     <tr style="background-color: #f2f2f2;">
-                        <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: left; font-size: 17px;">Item</th>
-                        <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center; font-size: 17px;">Qty</th>
-                        <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right; font-size: 17px;">Price</th>
-                        <th style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right; font-size: 17px;">Subtotal</th>
+                        <th style="padding: 8px; border-bottom: 1px solid #ddd; text-align: left; font-size: 17px;">Item</th>
+                        <th style="padding: 8px; border-bottom: 1px solid #ddd; text-align: center; font-size: 17px;">Qty</th>
+                        <th style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right; font-size: 17px;">Price</th>
+                        <th style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right; font-size: 17px;">Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${orderItemsTableHtml}
                     <tr style="background-color: #eaf7ed;">
-                        <td colspan="3" style="padding: 12px; text-align: right; font-weight: bold; font-size: 16px;">Subtotal:</td>
-                        <td style="padding: 12px; text-align: right; font-weight: bold; font-size: 16px;">₹${(totalAmount - shippingCost).toFixed(2)}</td>
+                        <td colspan="3" style="padding: 8px; text-align: left; font-weight: bold; font-size: 16px;">Subtotal:</td>
+                        <td style="padding: 8px; text-align: right; font-weight: bold; font-size: 16px;">₹${(totalAmount - shippingCost).toFixed(2)}</td>
                     </tr>
                     <tr style="background-color: #eaf7ed;">
-                        <td colspan="3" style="padding: 12px; text-align: right; font-weight: bold; font-size: 16px;">Delivery Charge:</td>
-                        <td style="padding: 12px; text-align: right; font-weight: bold; font-size: 16px;">₹${shippingCost.toFixed(2)}</td>
+                        <td colspan="3" style="padding: 8px; text-align: left; font-weight: bold; font-size: 16px;">Delivery Charge:</td>
+                        <td style="padding: 8px; text-align: right; font-weight: bold; font-size: 16px;">₹${shippingCost.toFixed(2)}</td>
                     </tr>
                     <tr style="background-color: #eaf7ed;">
-                        <td colspan="3" style="padding: 12px; text-align: right; font-weight: bold; font-size: 18px;">Total Amount:</td>
-                        <td style="padding: 12px; text-align: right; font-weight: bold; font-size: 18px; color: #4CAF50;">₹${totalAmount.toFixed(2)}</td>
+                        <td colspan="3" style="padding: 8px; text-align: left; font-weight: bold; font-size: 18px;">Total Amount:</td>
+                        <td style="padding: 8px; text-align: right; font-weight: bold; font-size: 18px; color: #4CAF50;">₹${totalAmount.toFixed(2)}</td>
                     </tr>
                 </tbody>
             </table>
@@ -136,10 +136,10 @@ exports.placeOrder = async (req, res) => {
                         <p style="font-size: 18px; margin-top: 8px;"><strong>Payment Method:</strong> ${paymentMethod}</p>
                     </div>
 
-                    <h3 style="font-size: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 12px; margin-bottom: 20px;">🧾 Order Summary</h3>
+                    <h3 style="font-size: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 20px;">🧾 Order Summary</h3>
                     ${orderSummaryTableStructure}
 
-                    <h3 style="font-size: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 12px; margin-bottom: 20px;">📦 Shipping Details</h3>
+                    <h3 style="font-size: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 20px;">📦 Shipping Details</h3>
                     ${shippingDetailsHtml}
 
                     <p style="margin-top: 35px; text-align: center; font-size: 16px; color: #666;">
@@ -177,10 +177,10 @@ exports.placeOrder = async (req, res) => {
                         <p style="font-size: 18px; margin-top: 8px;"><strong>Payment Method:</strong> ${paymentMethod}</p>
                     </div>
 
-                    <h3 style="font-size: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 12px; margin-bottom: 20px;">🧾 Order Details</h3>
+                    <h3 style="font-size: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 20px;">🧾 Order Details</h3>
                     ${orderSummaryTableStructure}
 
-                    <h3 style="font-size: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 12px; margin-bottom: 20px;">📦 Customer & Shipping Information</h3>
+                    <h3 style="font-size: 20px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 8px; margin-bottom: 20px;">📦 Customer & Shipping Information</h3>
                     ${shippingDetailsHtml}
 
                     <p style="margin-top: 35px; text-align: center; font-size: 16px; color: #666;">
@@ -218,5 +218,151 @@ exports.placeOrder = async (req, res) => {
     } catch (err) {
         console.error('Order placement error:', err);
         res.status(500).json({ message: 'Failed to place order', error: err.message });
+    }
+};
+
+
+// Get all orders for a logged-in user
+exports.getMyOrders = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const orders = await Order.find({ user: userId })
+      .sort({ createdAt: -1 }) // most recent first
+      .lean();
+
+    res.status(200).json({ orders });
+  } catch (err) {
+    console.error('Failed to fetch user orders:', err);
+    res.status(500).json({ message: 'Failed to get orders', error: err.message });
+  }
+};
+
+
+// guest order place 
+exports.guestPlaceOrder = async (req, res) => {
+    console.log('Backend received guest order req.body:', req.body);
+    try {
+        const { shippingInfo, paymentMethod, items, shippingCost, totalAmount } = req.body;
+
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            return res.status(400).json({ message: 'Order items are required' });
+        }
+
+        if (
+            !shippingInfo?.fullName ||
+            !shippingInfo?.streetAddress ||
+            !shippingInfo?.townCity ||
+            !shippingInfo?.phoneNumber ||
+            !shippingInfo?.emailAddress
+        ) {
+            return res.status(400).json({ message: 'Complete shipping info is required' });
+        }
+
+        const newOrder = new Order({
+            user: null, // 🚫 no user for guest
+            isGuest: true,
+            items,
+            shippingInfo,
+            paymentMethod,
+            shippingCost: shippingCost || 0,
+            totalAmount,
+            shippingOption: 'fixed_12_percent_delivery'
+        });
+
+        // Auto-increment orderId
+        const lastOrder = await Order.findOne().sort({ orderId: -1 }).select('orderId');
+        newOrder.orderId = (lastOrder && lastOrder.orderId ? lastOrder.orderId : 0) + 1;
+
+        await newOrder.save();
+
+        // Build order summary table + shipping HTML (reuse from existing code)
+        const orderItemsTableHtml = items.map(item => `
+            <tr>
+                <td><strong>${item.productName}</strong><br/>
+                    <small>${item.color ? `Color: ${item.color}` : ''}${item.color && item.size ? ', ' : ''}${item.size || ''}</small>
+                </td>
+                <td style="text-align:center;">${item.quantity}</td>
+                <td style="text-align:right;">₹${item.discountPrice}</td>
+                <td style="text-align:right;">₹${item.quantity * item.discountPrice}</td>
+            </tr>
+        `).join('');
+
+        const orderSummaryTableStructure = `
+            <table style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">Item</th>
+                        <th style="text-align:center;">Qty</th>
+                        <th style="text-align:right;">Price</th>
+                        <th style="text-align:right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${orderItemsTableHtml}
+                    <tr>
+                        <td colspan="3" style="text-align:left;">Subtotal:</td>
+                        <td style="text-align:right;">₹${(totalAmount - shippingCost).toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align:left;">Delivery Charge:</td>
+                        <td style="text-align:right;">₹${shippingCost.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align:left;font-weight:bold;">Total Amount:</td>
+                        <td style="text-align:right;font-weight:bold;">₹${totalAmount.toFixed(2)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        const shippingDetailsHtml = `
+            <div>
+                <p><strong>${shippingInfo.fullName}</strong></p>
+                <p>${shippingInfo.streetAddress}${shippingInfo.apartment ? ', ' + shippingInfo.apartment : ''}</p>
+                <p>${shippingInfo.townCity}</p>
+                <p>Phone: ${shippingInfo.phoneNumber}</p>
+                <p>Email: ${shippingInfo.emailAddress}</p>
+            </div>
+        `;
+
+        const customerEmailHtml = `
+            <h2>Thank you for your order at TrendiKala!</h2>
+            <p>Order ID: ${newOrder.orderId}</p>
+            ${orderSummaryTableStructure}
+            <h3>Shipping Details</h3>
+            ${shippingDetailsHtml}
+        `;
+
+        const adminEmailHtml = `
+            <h2>New Guest Order Received</h2>
+            <p>Order ID: ${newOrder.orderId}</p>
+            ${orderSummaryTableStructure}
+            <h3>Shipping Details</h3>
+            ${shippingDetailsHtml}
+        `;
+
+        await sendEmail(
+            shippingInfo.emailAddress,
+            `Your TrendiKala Order #${newOrder._id} Confirmed!`,
+            customerEmailHtml
+        );
+
+        if (process.env.ADMIN_EMAIL) {
+            await sendEmail(
+                process.env.ADMIN_EMAIL,
+                `NEW GUEST ORDER: #${newOrder._id}`,
+                adminEmailHtml
+            );
+        }
+
+        res.status(201).json({
+            message: 'Guest order placed successfully and emails sent',
+            order: newOrder
+        });
+
+    } catch (error) {
+        console.error('Guest order error:', error);
+        res.status(500).json({ message: 'Failed to place guest order', error: error.message });
     }
 };
